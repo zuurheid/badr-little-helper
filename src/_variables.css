@@ -1,0 +1,8 @@
+:root {
+  --report-text-size: 14px;
+}
+@media screen and (min-width: 600px) {
+  :root {
+    --report-text-size: 20px;
+  }
+}

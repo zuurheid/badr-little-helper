@@ -1,0 +1,33 @@
+.root {
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+}
+
+.innerSpace {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.5%;
+}
+
+.removeFileButton {
+  display: flex;
+  margin-left: auto;
+  padding: 1%;
+  color: #f50057;
+  cursor: pointer;
+}
+
+.fileName {
+  display: flex;
+  margin-left: 1%;
+  max-width: 70%;
+}
+
+.fileName > span {
+  color: rgba(0, 0, 0, 0.87);
+  font-family: "Roboto", sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

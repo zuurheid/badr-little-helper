@@ -1,0 +1,13 @@
+.root {
+  width: 100%;
+}
+.loadingIcon {
+  display: flex;
+  justify-content: center;
+}
+
+// TODO: repeated code, should share with FileEntry styles
+.signText {
+  color: rgba(0, 0, 0, 0.87);
+  font-family: "Roboto", sans-serif;
+}
