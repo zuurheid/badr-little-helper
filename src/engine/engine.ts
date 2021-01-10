@@ -97,9 +97,11 @@ export async function ReadFile(f: File): Promise<ParsedDecree[]> {
   let contents = await readPDF(f);
   let doc = await getDocument(contents).promise;
   let docText = await getText(doc);
+  // let expectedEntriesIDs = getExpectedEntriesIDs(docText);
   let decreesTexts = extractDecreesTexts(docText);
-  // let expectedEntriesIDs = getExpectedEntriesIDs(decreesTexts);
-  return decreesTexts.map((t) => processDecreeText(t));
+  /* let parsedDecrees = */ return decreesTexts.map((t) =>
+    processDecreeText(t)
+  );
   /*
   const actualNumberOfEntries = parsedDecrees.reduce(
     (acc, currEl) => acc + currEl.entries.length,
@@ -111,19 +113,17 @@ export async function ReadFile(f: File): Promise<ParsedDecree[]> {
   if (expectedEntriesIDs.length != actualNumberOfEntries) {
     checkNotFoundEntries(parsedDecrees, expectedEntriesIDs);
   }
-   */
+  return parsedDecrees;
+  */
 }
 
 const potentialEntryRe = /Dt\. \d*?\/\d*/g;
-function getExpectedEntriesIDs(t: string[]): string[] {
-  return t.reduce((acc: string[], currEl) => {
-    let matches = currEl.match(potentialEntryRe);
-    if (matches === null) {
-      return acc;
-    }
-    acc.push(...matches);
-    return acc;
-  }, []);
+function getExpectedEntriesIDs(t: string): string[] {
+  let matches = t.match(potentialEntryRe);
+  if (matches === null) {
+    return [];
+  }
+  return matches;
 }
 
 function checkNotFoundEntries(decrees: ParsedDecree[], expectedIDs: string[]) {
@@ -142,7 +142,7 @@ function checkNotFoundEntries(decrees: ParsedDecree[], expectedIDs: string[]) {
       return acc;
     }, new Map<string, number>());
   console.log("decrees IDs Map: ", decreesIDsMap);
-  console.log("decrees IDs Map: ", expectedIDs);
+  console.log("expected IDs Map: ", expectedIDs);
   let expectedIDsMap = expectedIDs.reduce((acc, id) => {
     if (!acc.has(id)) {
       acc.set(id, 0);
@@ -252,7 +252,7 @@ function groupByDept(entries: entry[]): departmentStats[] {
 
 async function getText(doc: any): Promise<string> {
   let pages = [];
-  for (let i = 1; i < doc.numPages; i++) {
+  for (let i = 1; i <= doc.numPages; i++) {
     let p = await doc.getPage(i);
     let tc = await p.getTextContent();
     let pageText = tc.items.map((s: any) => s.str).join(" ");
@@ -554,14 +554,24 @@ function parseBirthDatePlaceStr(s: string): parsedBirthDatePlaceStr {
 }
 
 function extractBirthPlace(s: string): birthPlace | null {
+  let inLP = false;
+  if (s.indexOf("auvallois-Perret") !== -1) {
+    inLP = true;
+  }
+  if (inLP) {
+    console.log(s);
+  }
   // trim and remove leading and trailing commas
   s = s.trim().replace(/(^,)|(,$)/g, "");
-  let prefixPos = s.indexOf(" ");
-  if (prefixPos === -1) {
+  if (inLP) {
+    console.log(s);
+  }
+  let [communeArticle, posAfterPrefix] = findEndOfBirthplacePrefix(s);
+  if (posAfterPrefix === 0) {
     console.log(`[WARN]: birth place prefix not found in "${s}"`);
     return null;
   }
-  let sCopy = s.substr(prefixPos + 1);
+  let sCopy = s.substr(posAfterPrefix);
   let openningParenthPos = sCopy.indexOf("(");
   let country: string | null = null;
   if (openningParenthPos === -1) {
@@ -592,10 +602,37 @@ function extractBirthPlace(s: string): birthPlace | null {
     console.log(`[WARN]: commune not found in ${s}`);
     commune = null;
   }
+  if (communeArticle !== "") {
+    commune = `${communeArticle} ${commune}`;
+    console.log(
+      `[INFO]: commune article "${communeArticle}" found for the commune ${commune}`
+    );
+  }
   return {
     country,
     commune,
   };
+}
+
+type communeArticle = "Le" | "La" | "";
+
+function findEndOfBirthplacePrefix(s: string): [communeArticle, number] {
+  const possiblePrefixes: [string, communeArticle][] = [
+    ["à ", ""],
+    ["au ", "Le"],
+    ["à la ", "La"],
+  ];
+  let prefixPos = 0;
+  for (let i = 0; i < possiblePrefixes.length; i++) {
+    let [prefix, article] = possiblePrefixes[i];
+    if (s.length <= prefix.length) {
+      continue;
+    }
+    if (s.substr(0, prefix.length) === prefix) {
+      return [article, prefixPos + prefix.length];
+    }
+  }
+  return ["", 0];
 }
 
 function getEntryName(name: string): entryName {
