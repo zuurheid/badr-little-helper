@@ -1,0 +1,22 @@
+{
+  "name": "@zuurheid/french-nat-decrees-parser",
+  "version": "0.1.0",
+  "description": "French naturalisation decrees PDF parser",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
+  "scripts": {
+    "clean": "rm -rf _bundles lib lib-esm",
+    "build": "npm run clean && npx tsc && npx tsc -m es6 --outDir lib-esm && npx webpack"
+  },
+  "author": "zuurheid <zuurheid@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "pdfjs-dist": "^2.6.347"
+  },
+  "devDependencies": {
+    "ts-loader": "^8.0.13",
+    "typescript": "^4.1.3",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2"
+  }
+}

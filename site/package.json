@@ -37,6 +37,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
+    "@zuurheid/french-nat-decrees-parser": "file:../parser",
     "d3": "^6.3.1",
     "pdfjs-dist": "^2.6.347"
   }

@@ -1,10 +1,10 @@
 import React from "react";
-import { decreesStats, entryType } from "../../../engine/engine";
+import { DecreesStats } from "../../../engine/engine";
 import Article from "../Article";
 import { ListBlock, TextBlock } from "../TextBlocks";
 
 interface SummaryProps {
-  stats: decreesStats;
+  stats: DecreesStats;
 }
 
 const Summary: React.FC<SummaryProps> = ({ stats }) => {
@@ -21,7 +21,7 @@ const Summary: React.FC<SummaryProps> = ({ stats }) => {
   let decreesTitles = stats.decrees.map((d) => ({
     date: d.date,
     number: d.number,
-    entriesCount: d.entries.filter((e) => e.type !== entryType.EFF).length,
+    entriesCount: d.naturalizationsCount,
   }));
 
   decreesTitles.sort((a, b) => {
