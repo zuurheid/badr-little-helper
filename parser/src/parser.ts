@@ -1,101 +1,26 @@
-import { getDocument } from "pdfjs-dist";
-import { getDepartmentName } from "./departments";
+import { GlobalWorkerOptions, version, getDocument } from "pdfjs-dist";
+import {
+  ParsedDecree,
+  Entry,
+  EntryName,
+  EntryType,
+  MinistryNumber,
+} from "./types";
 
-async function readPDF(f: File): Promise<Uint8Array> {
-  return new Promise((resolve, reject) => {
-    try {
-      let fr = new FileReader();
-      fr.onload = () => {
-        if (fr.result == null) {
-          return reject(new Error("read document result is null"));
-        }
-        resolve(new Uint8Array(fr.result as ArrayBuffer));
-      };
-
-      fr.readAsArrayBuffer(f);
-    } catch (e) {
-      return reject(new Error("reading a PDF document failed: " + e));
-    }
-  });
+export function init(pdfJSWorkerSrc?: ((version: string) => string) | string) {
+  if (pdfJSWorkerSrc == null) {
+    GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.js`;
+    return;
+  }
+  if (typeof pdfJSWorkerSrc === "string") {
+    GlobalWorkerOptions.workerSrc = pdfJSWorkerSrc;
+    return;
+  }
+  GlobalWorkerOptions.workerSrc = pdfJSWorkerSrc(version);
 }
 
-export interface totalDeptStats {
-  department: department;
-  count: number;
-}
-
-export interface decreesStats {
-  decrees: ParsedDecree[];
-  totalEntries: number;
-  totalMinistryNumberStats: [string, number][];
-  totalDepartmentsStats: totalDeptStats[];
-}
-
-export async function PrepareStats(
-  decrees: ParsedDecree[]
-): Promise<decreesStats> {
-  return {
-    decrees,
-    totalEntries: decrees.reduce(
-      (acc, currEl) => acc + currEl.entries.length,
-      0
-    ),
-    totalMinistryNumberStats: calculateTotalMinistryNumberStats(decrees),
-    totalDepartmentsStats: calculateTotalDepartmentsStats(decrees),
-  };
-}
-
-function calculateTotalMinistryNumberStats(
-  decrees: ParsedDecree[]
-): [string, number][] {
-  let m = new Map<string, number>();
-  decrees.forEach((d) => {
-    d.ministryNumberStats.forEach((s) => {
-      if (!m.has(s.mn)) {
-        m.set(s.mn, 0);
-      }
-      m.set(s.mn, m.get(s.mn)! + s.entriesKeys.length);
-    });
-  });
-  return Array.from(m.entries());
-}
-
-function calculateTotalDepartmentsStats(
-  decrees: ParsedDecree[]
-): totalDeptStats[] {
-  let m = new Map<string, totalDeptStats>();
-  decrees.forEach((d) => {
-    d.departmentsStats.forEach((s) => {
-      if (!m.has(s.dept.idx)) {
-        m.set(s.dept.idx, {
-          count: 0,
-          department: {
-            idx: s.dept.idx,
-            name: s.dept.name,
-          },
-        });
-      }
-      let prevDeptState = m.get(s.dept.idx)!;
-      m.set(s.dept.idx, {
-        ...prevDeptState,
-        count: prevDeptState.count + s.entriesKeys.length,
-      });
-    });
-  });
-  return Array.from(m.values());
-}
-
-export interface ParsedDecree {
-  number: string;
-  date: Date | null;
-  departmentsStats: departmentStats[];
-  ministryNumberStats: ministryNumberStats[];
-  entries: entry[];
-}
-
-export async function ReadFile(f: File): Promise<ParsedDecree[]> {
-  let contents = await readPDF(f);
-  let doc = await getDocument(contents).promise;
+export async function parseDecreeFile(f: Uint8Array): Promise<ParsedDecree[]> {
+  let doc = await getDocument(f).promise;
   let docText = await getText(doc);
   // let expectedEntriesIDs = getExpectedEntriesIDs(docText);
   let decreesTexts = extractDecreesTexts(docText);
@@ -115,139 +40,6 @@ export async function ReadFile(f: File): Promise<ParsedDecree[]> {
   }
   return parsedDecrees;
   */
-}
-
-const potentialEntryRe = /Dt\. \d*?\/\d*/g;
-function getExpectedEntriesIDs(t: string): string[] {
-  let matches = t.match(potentialEntryRe);
-  if (matches === null) {
-    return [];
-  }
-  return matches;
-}
-
-function checkNotFoundEntries(decrees: ParsedDecree[], expectedIDs: string[]) {
-  let decreesIDsMap = decrees
-    .reduce((acc: string[], currEl) => {
-      currEl.entries.forEach((e) =>
-        acc.push(`Dt. ${e.dt.DecreeID}/${e.dt.ID}`)
-      );
-      return acc;
-    }, [])
-    .reduce((acc, id) => {
-      if (!acc.has(id)) {
-        acc.set(id, 0);
-      }
-      acc.set(id, acc.get(id)! + 1);
-      return acc;
-    }, new Map<string, number>());
-  console.log("decrees IDs Map: ", decreesIDsMap);
-  console.log("expected IDs Map: ", expectedIDs);
-  let expectedIDsMap = expectedIDs.reduce((acc, id) => {
-    if (!acc.has(id)) {
-      acc.set(id, 0);
-    }
-    acc.set(id, acc.get(id)! + 1);
-    return acc;
-  }, new Map<string, number>());
-  decreesIDsMap.forEach((v, k) => {
-    if (!expectedIDsMap.has(k)) {
-      console.log(`got an unexpected ID ${k} (${v})`);
-      return;
-    }
-    if (expectedIDsMap.get(k) !== v) {
-      console.log(`got ${v} IDs ${k}, expected ${v}`);
-    }
-  });
-  expectedIDsMap.forEach((v, k) => {
-    if (!decreesIDsMap.has(k)) {
-      console.log(`did not get an expected ID ${k} (${v})`);
-      return;
-    }
-  });
-}
-
-function processDecreeText(t: string): ParsedDecree {
-  let date = getDecreeDate(t);
-  let entries = parseText(t);
-  let lastNames = entries.map((e) => {
-    return {
-      lastName: e.name.lastName,
-      mn: `${e.ministryNumber.year}X ${e.ministryNumber.series}${e.ministryNumber.idx}`,
-    };
-  });
-  lastNames.sort((a, b) =>
-    a.lastName > b.lastName ? 1 : a.lastName < b.lastName ? -1 : 0
-  );
-  let naturalised = entries.filter((e) => e.type !== entryType.EFF);
-  return {
-    date: date,
-    number: getDecreeNumber(entries),
-    departmentsStats: groupByDept(naturalised),
-    ministryNumberStats: groupByMinistryNumber(naturalised),
-    entries: entries,
-  };
-}
-
-function getDecreeNumber(entries: entry[]): string {
-  if (entries.length === 0) {
-    console.log(
-      "[WARN]: no entries found in the decree text, so no decree number was extracted"
-    );
-    return "-1";
-  }
-  return entries[0].dt.DecreeID;
-}
-
-export interface ministryNumberStats {
-  mn: string;
-  entriesKeys: number[];
-}
-
-// TODO: refactor and group with groupByDept
-function groupByMinistryNumber(entries: entry[]): ministryNumberStats[] {
-  let result = entries.reduce((acc: Map<string, entry[]>, e) => {
-    let mn = `${e.ministryNumber.year}X${e.ministryNumber.series}`;
-    if (!acc.has(mn)) {
-      acc.set(mn, []);
-    }
-    acc.get(mn)!.push(e);
-    return acc;
-  }, new Map<string, entry[]>());
-  let mapEntries: ministryNumberStats[] = [];
-  for (let [mn, entries] of result.entries()) {
-    mapEntries.push({ mn, entriesKeys: entries.map((e) => e.key) });
-  }
-  return mapEntries;
-}
-
-interface department {
-  name: string;
-  idx: string;
-}
-
-interface departmentStats {
-  dept: department;
-  entriesKeys: number[];
-}
-
-function groupByDept(entries: entry[]): departmentStats[] {
-  let result = entries.reduce((acc: Map<string, [department, entry[]]>, e) => {
-    if (!acc.has(e.department.idx)) {
-      acc.set(e.department.idx, [e.department, []]);
-    }
-    acc.get(e.department.idx)![1].push(e);
-    return acc;
-  }, new Map<string, [department, entry[]]>());
-  let mapEntries: departmentStats[] = [];
-  for (let [dept, entries] of result.values()) {
-    mapEntries.push({
-      dept,
-      entriesKeys: entries.map((e) => e.key),
-    });
-  }
-  mapEntries.sort((a, b) => b.entriesKeys.length - a.entriesKeys.length);
-  return mapEntries;
 }
 
 async function getText(doc: any): Promise<string> {
@@ -332,39 +124,101 @@ function removeSummaryPage(docText: string): string {
   return docText.substr(indexes[1]);
 }
 
-export enum entryType {
-  NAT = 1,
-  EFF,
-  REI,
-  LIB,
-  UNKNOWN,
+function processDecreeText(t: string): ParsedDecree {
+  let date = getDecreeDate(t);
+  let entries = parseText(t);
+  return {
+    date: date,
+    number: getDecreeNumber(entries),
+    entries: entries,
+  };
 }
 
-interface entryName {
-  firstNames: string[];
-  lastName: string;
+function getDecreeDate(text: string): Date | null {
+  let decreeDateStr = extractDecreeDateStr(text);
+  if (decreeDateStr === null) {
+    return null;
+  }
+  let dateParts = decreeDateStr.split(" ");
+  if (dateParts.length !== 3) {
+    console.log(`[WARN]: parsed decree date does not have three parts`);
+    return null;
+  }
+  let month = monthNameToNumber(dateParts[1]);
+  if (month === null) {
+    console.log(`[WARN]: unknown month ${dateParts[1]} found`);
+    return null;
+  }
+  const day = convertDatePartToNumber(dateParts[0]);
+  const year = convertDatePartToNumber(dateParts[2]);
+  if (day === null || year === null) {
+    return null;
+  }
+  return new Date(year, month, day);
 }
 
-interface entryMinisterNumber {
-  year: string;
-  series: string;
-  idx: string;
+const dateRe = /\d{1,2} (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) \d{4}/g;
+function extractDecreeDateStr(text: string): string | null {
+  let m = text.match(decreePreambleRe);
+  if (m === null || m.length === 0) {
+    console.log("[WARN]: decree preamble not found, so no date was extracted");
+    return null;
+  }
+  if (m.length !== 1) {
+    console.log(
+      `[WARN]: ${m.length} decree preambles found during the decree date extraction`
+    );
+  }
+  let date = m[0].match(dateRe);
+  if (date == null || date.length === 0) {
+    console.log("[WARN]: failed to extract a date from the decree preamble");
+    return null;
+  }
+  if (date.length !== 1) {
+    console.log(
+      `[WARN]: ${date.length} dates found in the decree preamble during the decree date extraction`
+    );
+  }
+  return date[0];
 }
 
-interface entry {
-  key: number;
-  name: entryName;
-  birthData: birthData;
-  sex: sexType;
-  type: entryType;
-  ministryNumber: entryMinisterNumber;
-  department: department;
-  dt: entryID;
-  rest: string;
+const frenchMonthsNames = [
+  "janvier",
+  "février",
+  "mars",
+  "avril",
+  "mai",
+  "juin",
+  "juillet",
+  "août",
+  "septembre",
+  "octobre",
+  "novembre",
+  "décembre",
+];
+function monthNameToNumber(m: string): number | null {
+  const mLower = m.toLowerCase();
+  let idx = frenchMonthsNames.findIndex((name) => mLower === name);
+  return idx === -1 ? null : idx;
+}
+
+function convertDatePartToNumber(p: string): number | null {
+  if (!/^\d+$/.test(p)) {
+    console.log(
+      `[WARN]: date part to parse as number ${p} contains non-digit characters`
+    );
+    return null;
+  }
+  let n = parseInt(p, 10);
+  if (isNaN(n)) {
+    console.log(`[WARN]: failed to parse the date part ${p} as a number`);
+    return null;
+  }
+  return n;
 }
 
 const entryRe = /(Mc|\p{Lu})(\p{Lu}| |-|’)*?\(.*?\).*?née?.*?(NAT|EFF|REI|LIB).*?dép.*?Dt\..*?\./gu;
-function parseText(text: string): entry[] {
+function parseText(text: string): Entry[] {
   text = text.replace("JOURNAL OFFICIEL DE LA RÉPUBLIQUE FRANÇAISE", "");
   text = extractPartOfDecreeWithEntries(text);
   let matches = text.match(entryRe);
@@ -372,13 +226,6 @@ function parseText(text: string): entry[] {
     throw new Error("failed to extract entries");
   }
   return extractEntries(matches);
-}
-
-function extractEntries(matches: RegExpMatchArray): entry[] {
-  function notEmpty(e: entry | null): e is entry {
-    return e != null;
-  }
-  return matches.map((e, idx) => extractEntry(e, idx)).filter(notEmpty);
 }
 
 const decreeFieldRe = /Dt\. \d{3}\/\d*./g;
@@ -403,19 +250,28 @@ function extractPartOfDecreeWithEntries(text: string): string {
   return text.substr(0, safetyPaddingPos);
 }
 
-function extractEntry(s: string, idx: number): entry | null {
+function extractEntries(matches: RegExpMatchArray): Entry[] {
+  function notEmpty(e: Entry | null): e is Entry {
+    return e != null;
+  }
+  return matches.map((e, idx) => extractEntry(e, idx)).filter(notEmpty);
+}
+
+function extractEntry(s: string, idx: number): Entry | null {
   try {
     let fields = extractEntryFields(s);
     return {
-      key: idx,
-      name: getEntryName(fields.name),
-      birthData: fields.birthDatePlaceData.birthData,
-      sex: fields.birthDatePlaceData.sex,
-      type: strToEntryType(fields.entryT),
-      ministryNumber: parseMinistryNumber(fields.ministryNumber),
-      department: extractDepartment(fields.depNum),
-      dt: extractEntryID(fields.entryIdx),
-      rest: fields.rest,
+      raw: s,
+      parsed: {
+        name: getEntryName(fields.name),
+        birthData: fields.birthDatePlaceData.birthData,
+        sex: fields.birthDatePlaceData.sex,
+        type: strToEntryType(fields.entryT),
+        ministryNumber: parseMinistryNumber(fields.ministryNumber),
+        department: extractDepartment(fields.depNum),
+        dtNumber: extractEntryID(fields.entryIdx),
+        rest: fields.rest,
+      },
     };
   } catch (e) {
     console.log(`[WARN]: failed to process the entry ${s}: ${e}`);
@@ -635,7 +491,7 @@ function findEndOfBirthplacePrefix(s: string): [communeArticle, number] {
   return ["", 0];
 }
 
-function getEntryName(name: string): entryName {
+function getEntryName(name: string): EntryName {
   let openParenthPos = name.indexOf("(");
   let firstNamesStr = name.substr(
     openParenthPos + 1,
@@ -648,19 +504,19 @@ function getEntryName(name: string): entryName {
   };
 }
 
-function strToEntryType(t: string): entryType {
+function strToEntryType(t: string): EntryType {
   switch (t) {
     case "NAT":
-      return entryType.NAT;
+      return EntryType.NAT;
     case "EFF":
-      return entryType.EFF;
+      return EntryType.EFF;
     case "LIB":
-      return entryType.LIB;
+      return EntryType.LIB;
     case "REI":
-      return entryType.REI;
+      return EntryType.REI;
     default:
       console.log(`[WARN]: an unknown entry type ${t} found`);
-      return entryType.UNKNOWN;
+      return EntryType.UNKNOWN;
   }
 }
 
@@ -693,7 +549,7 @@ function extractEntryID(entryIdx: string): entryID {
   };
 }
 
-function parseMinistryNumber(mn: string): entryMinisterNumber {
+function parseMinistryNumber(mn: string): MinistryNumber {
   mn = mn.trim();
   let sepIdx = mn.indexOf("X");
   if (sepIdx == -1) {
@@ -706,93 +562,16 @@ function parseMinistryNumber(mn: string): entryMinisterNumber {
   };
 }
 
-function extractDepartment(department: string): department {
-  let idx = extractDepartmentIdx(department);
-  return {
-    idx,
-    name: getDepartmentName(idx),
-  };
+function extractDepartment(department: string): string {
+  return extractDepartmentIdx(department);
 }
 
-function getDecreeDate(text: string): Date | null {
-  let decreeDateStr = extractDecreeDateStr(text);
-  if (decreeDateStr === null) {
-    return null;
-  }
-  let dateParts = decreeDateStr.split(" ");
-  if (dateParts.length !== 3) {
-    console.log(`[WARN]: parsed decree date does not have three parts`);
-    return null;
-  }
-  let month = monthNameToNumber(dateParts[1]);
-  if (month === null) {
-    console.log(`[WARN]: unknown month ${dateParts[1]} found`);
-    return null;
-  }
-  const day = convertDatePartToNumber(dateParts[0]);
-  const year = convertDatePartToNumber(dateParts[2]);
-  if (day === null || year === null) {
-    return null;
-  }
-  return new Date(year, month, day);
-}
-
-const dateRe = /\d{1,2} (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) \d{4}/g;
-function extractDecreeDateStr(text: string): string | null {
-  let m = text.match(decreePreambleRe);
-  if (m === null || m.length === 0) {
-    console.log("[WARN]: decree preamble not found, so no date was extracted");
-    return null;
-  }
-  if (m.length !== 1) {
+function getDecreeNumber(entries: Entry[]): string {
+  if (entries.length === 0) {
     console.log(
-      `[WARN]: ${m.length} decree preambles found during the decree date extraction`
+      "[WARN]: no entries found in the decree text, so no decree number was extracted"
     );
+    return "-1";
   }
-  let date = m[0].match(dateRe);
-  if (date == null || date.length === 0) {
-    console.log("[WARN]: failed to extract a date from the decree preamble");
-    return null;
-  }
-  if (date.length !== 1) {
-    console.log(
-      `[WARN]: ${date.length} dates found in the decree preamble during the decree date extraction`
-    );
-  }
-  return date[0];
-}
-
-const frenchMonthsNames = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-];
-function monthNameToNumber(m: string): number | null {
-  const mLower = m.toLowerCase();
-  let idx = frenchMonthsNames.findIndex((name) => mLower === name);
-  return idx === -1 ? null : idx;
-}
-
-function convertDatePartToNumber(p: string): number | null {
-  if (!/^\d+$/.test(p)) {
-    console.log(
-      `[WARN]: date part to parse as number ${p} contains non-digit characters`
-    );
-    return null;
-  }
-  let n = parseInt(p, 10);
-  if (isNaN(n)) {
-    console.log(`[WARN]: faile to parse the date part ${p} as a number`);
-    return null;
-  }
-  return n;
+  return entries[0].parsed.dtNumber.DecreeID;
 }
