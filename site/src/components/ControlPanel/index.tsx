@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Grid from "@material-ui/core/Grid";
 import ButtonMUI from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -30,6 +31,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
   onReset,
   status,
 }) => {
+  const { t, i18n } = useTranslation();
   let [files, setFiles] = useState<FileToParse[] | null>(null);
 
   const onChange = (files: FileList | null) => {
@@ -108,7 +110,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
               <Grid item xs={12}>
                 <FileInput
                   {...{
-                    buttonText: "Upload",
+                    buttonText: t("uploadButton"),
                     buttonType: "upload",
                     onChange,
                   }}
@@ -132,7 +134,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
                 </Grid>
                 <Grid item xs={6}>
                   <Button
-                    text="Parse"
+                    text={t("analyseButton")}
                     color="primary"
                     variant="contained"
                     onClick={onParseClick}
@@ -141,7 +143,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
                 <Grid item xs={6}>
                   <Button
                     color="secondary"
-                    text="Reset"
+                    text={t("resetButton")}
                     variant="outlined"
                     onClick={onFilesReset}
                   />
@@ -174,7 +176,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
                 fullWidth
                 onClick={onFullReset}
               >
-                Reset
+                {t("resetButton")}
               </ButtonMUI>
             </Grid>
           </Grid>

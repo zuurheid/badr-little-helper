@@ -1,5 +1,6 @@
 const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const NODE_ENV = process.env.NODE_ENV;
 
 const modeDevelopment = "development";
@@ -59,6 +60,9 @@ var config = {
         mode === modeProduction
           ? "https://zuurheid.github.io/badr-little-helper"
           : "/",
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: "public/locales", to: "locales" }],
     }),
   ],
   devServer: {

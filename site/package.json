@@ -16,9 +16,11 @@
   "license": "ISC",
   "devDependencies": {
     "@types/d3": "^6.2.0",
+    "@types/i18n": "^0.12.0",
     "@types/pdfjs-dist": "^2.1.7",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "copy-webpack-plugin": "^6.2.1",
     "css-loader": "^5.0.1",
     "gh-pages": "^3.1.0",
     "html-webpack-plugin": "^4.5.0",
@@ -39,6 +41,10 @@
     "@material-ui/icons": "^4.11.2",
     "@zuurheid/french-nat-decrees-parser": "file:../parser",
     "d3": "^6.3.1",
-    "pdfjs-dist": "^2.6.347"
+    "i18next": "^19.8.4",
+    "i18next-browser-languagedetector": "^6.0.1",
+    "i18next-http-backend": "^1.0.21",
+    "pdfjs-dist": "^2.6.347",
+    "react-i18next": "^11.8.5"
   }
 }
