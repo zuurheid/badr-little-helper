@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import MUISelect from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import { createMuiTheme } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
+import styled from "styled-components";
 
 const LanguageSelect = () => {
   const { i18n } = useTranslation();
@@ -22,56 +24,36 @@ const LanguageSelect = () => {
     },
   ];
 
-  const getLanguageByLocale = (locale: string) => {
-    console.log("Locale: ", locale);
-    const filtered = languages.filter((l) => l.locale === locale);
-    if (filtered.length !== 1) {
-      return "???";
-    }
-    console.log("filtered: ", filtered);
-    return filtered[0];
-  };
-
   const onChange = (e: any) => {
     setLocale(e.target.value);
     i18n.changeLanguage(e.target.value);
   };
 
   return (
-    <div>
-      <FormControl variant="outlined">
-        <Select
-          native
-          defaultValue={locale}
-          onChange={onChange}
-          // inputProps={{
-          //   name: "age",
-          //   id: "outlined-age-native-simple",
-          // }}
-        >
-          {languages.map((l) => {
-            return (
-              <option key={l.locale} value={l.locale}>
-                {l.language}
-              </option>
-            );
-          })}
-        </Select>
-      </FormControl>
-    </div>
+    <FormControl variant="outlined">
+      <Select defaultValue={locale} onChange={onChange}>
+        {languages.map((l) => {
+          return (
+            <MenuItem key={l.locale} value={l.locale}>
+              {l.language}
+            </MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
   );
 };
 
-interface LanguageOptionProps {
-  text: string;
-}
-
-const LanguageOption: React.FC<LanguageOptionProps> = ({ text }) => {
-  return (
-    <>
-      <span>{text}</span>
-    </>
-  );
-};
+const Select = styled(MUISelect)`
+  && {
+    .MuiSelect-root {
+      color: white;
+      background: #009e9d;
+    }
+    .MuiSvgIcon-root {
+      color: white;
+    }
+  }
+`;
 
 export default LanguageSelect;
