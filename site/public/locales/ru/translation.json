@@ -1,0 +1,12 @@
+{
+  "uploadButton": "Выберите декрет",
+  "analyseButton": "Обработать",
+  "resetButton": "Сбросить",
+  "report": {
+    "summary": {
+      "header": "Общий итог",
+      "datePreposition": "от",
+      "text": "Количество натурализаций в декрете {{decreeName}}: {{naturalisedCount}}"
+    }
+  }
+}

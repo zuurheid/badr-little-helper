@@ -10,10 +10,12 @@ i18n
   .init({
     lng: "fr",
     fallbackLng: "fr",
+    preload: ["fr", "en", "ru"],
     ns: ["translation"],
     backend: {
       loadpath: "/locales/{{lng}}/{{ns}}.json",
     },
+    interpolation: { escapeValue: false },
   });
 
 export default i18n;

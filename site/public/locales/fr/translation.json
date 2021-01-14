@@ -1,5 +1,12 @@
 {
   "uploadButton": "Choisissez le fichier décret",
   "analyseButton": "Démarrer l'analyse",
-  "resetButton": "Réinitialiser"
+  "resetButton": "Réinitialiser",
+  "report": {
+    "summary": {
+      "header": "Sommaire",
+      "datePreposition": "de",
+      "text": "Nombre de naturalisés dans le décret {{decreeName}} : {{naturalisedCount}}"
+    }
+  }
 }

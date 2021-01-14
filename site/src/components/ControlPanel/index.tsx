@@ -169,7 +169,8 @@ const ControlPanel: React.FC<controlPanelProps> = ({
       return (
         <div className={s.root}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={3} />
+            <Grid item xs={6}>
               <ButtonMUI
                 variant="contained"
                 color="secondary"
@@ -179,6 +180,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
                 {t("resetButton")}
               </ButtonMUI>
             </Grid>
+            <Grid item xs={3} />
           </Grid>
         </div>
       );

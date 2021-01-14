@@ -1,5 +1,12 @@
 {
   "uploadButton": "Choose decree file",
   "analyseButton": "Start analysis",
-  "resetButton": "Reset"
+  "resetButton": "Reset",
+  "report": {
+    "summary": {
+      "header": "Summary",
+      "datePreposition": "of",
+      "text": "Number of naturalisations in the decree {{decreeName}}: {{naturalisedCount}}"
+    }
+  }
 }

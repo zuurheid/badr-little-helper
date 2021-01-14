@@ -8,7 +8,7 @@ import "./_variables.css";
 const App = () => {
   return (
     <>
-      <Suspense fallback="loading">
+      <Suspense fallback="">
         <div className={s.navbar}>
           <Navbar />
         </div>
