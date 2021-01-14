@@ -10,12 +10,9 @@ interface SummaryProps {
 
 const Summary: React.FC<SummaryProps> = ({ stats }) => {
   const { t } = useTranslation();
-  const getDecreeName = (title: { date: Date | null; number: string }) => {
-    if (title.date === null) {
-      return `${title.number}`;
-    }
-    let date = new Intl.DateTimeFormat("fr-FR").format(title.date);
-    return `${title.number} ${t("report.summary.datePreposition")} ${date}`;
+
+  const getDecreeDate = (date: Date) => {
+    return new Intl.DateTimeFormat("fr-FR").format(date);
   };
 
   let decreesTitles = stats.decrees.map((d) => ({
@@ -41,35 +38,42 @@ const Summary: React.FC<SummaryProps> = ({ stats }) => {
     (acc, currEl) => acc + currEl.entries.length,
     0
   );
-  if (decreesTitles.length === 1) {
-    return (
-      <Article
-        title={t("report.summary.header")}
-        body={[
-          <TextBlock
-            text={t("report.summary.text", {
-              decreeName: getDecreeName(decreesTitles[0]),
-              naturalisedCount: decreesTitles[0].entriesCount,
-            })}
-          />,
-        ]}
-      />
-    );
-  }
   return (
     <Article
-      title="Sommaire"
+      title={t("report.summary.header")}
       body={[
         <TextBlock
-          text={`Nombre total de naturalisations dans les ${stats.decrees.length} décrets : ${totalNaturalisationsNumber}`}
+          text={t("report.summary.text", {
+            count: decreesTitles.length,
+            naturalisations: t("report.summary.naturalisations", {
+              count: totalNaturalisationsNumber,
+            }),
+            decree: t("report.summary.decree", {
+              count: decreesTitles.length,
+              decreeName: decreesTitles.map((t) => t.number).join(", "),
+            }),
+            decreeDate:
+              decreesTitles.length > 1
+                ? null
+                : getDecreeDate(decreesTitles[0].date!),
+          })}
         />,
-        <ListBlock
-          elements={decreesTitles.map(
-            (d) =>
-              `${d.entriesCount} naturalisés dans le décret ${getDecreeName(d)}`
-          )}
-          type="unordered"
-        />,
+        decreesTitles.length > 1 ? (
+          <ListBlock
+            elements={decreesTitles.map((d) =>
+              t("report.summary.listElement", {
+                naturalisations: t("report.summary.naturalisations", {
+                  count: d.entriesCount,
+                }),
+                decreeNumber: d.number,
+                decreeDate: getDecreeDate(d.date!),
+              })
+            )}
+            type="unordered"
+          />
+        ) : (
+          <></>
+        ),
       ]}
     />
   );

@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { HeaderBlock, ListBlock, TextBlock } from "../TextBlocks";
 import Article from "../Article";
 import s from "../Report.module.scss";
+import { useTranslation } from "react-i18next";
 
 export interface departmentsDataElement {
   idx: string;
@@ -15,6 +16,7 @@ interface departmentsChartProps {
 }
 
 export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
+  const { t } = useTranslation();
   const divID = "departments-chart";
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
 
     svg
       .append("g")
-      .attr("fill", "steelblue")
+      .attr("fill", "#3f51b5")
       .selectAll("rect")
       .data(data)
       .join("rect")
@@ -85,6 +87,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
     svg
       .append("text")
       .attr("class", s.axisLabel)
+      .attr("id", "y-axis-label")
       .attr("transform", "rotate(-90)")
       .attr("y", margin.left / 4 + 10)
       .attr("x", 0 - height / 2)
@@ -94,6 +97,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
     svg
       .append("text")
       .attr("class", s.axisLabel)
+      .attr("id", "x-axis-label")
       .attr("x", width / 2)
       .attr("y", height - 10)
       .style("text-anchor", "middle")
@@ -111,6 +115,15 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
       .style("stroke-width", 1);
   }, []);
 
+  useEffect(() => {
+    d3.selectAll(`#${divID} #y-axis-label`).each(function () {
+      d3.select(this).text(t("report.departments.graph.yAxisLabel"));
+    });
+    d3.selectAll(`#${divID} #x-axis-label`).each(function () {
+      d3.select(this).text(t("report.departments.graph.xAxisLabel"));
+    });
+  });
+
   return (
     <>
       <DepartmentsChartTitle elementsCount={data.length} />
@@ -127,7 +140,10 @@ interface departmentsChartTitleProps {
 const DepartmentsChartTitle: React.FC<departmentsChartTitleProps> = ({
   elementsCount,
 }) => {
-  const text = `Top ${elementsCount} des préfectures selon le nombre de naturalisations`;
+  const { t } = useTranslation();
+  const text = t("report.departments.header", {
+    departmentsCount: elementsCount,
+  });
   return <HeaderBlock text={text} />;
 };
 
@@ -139,6 +155,8 @@ interface departmentsChartTextProps {
 const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
   data,
 }) => {
+  const { t } = useTranslation();
+
   const getText = () => {
     let dataCopy = data.slice();
     const entriesCount = 4;
@@ -147,11 +165,17 @@ const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
     }
     let texts: string[] = [];
     dataCopy.forEach((d) => {
-      texts.push(`${d.idx} (${d.name}) avec ${d.count} naturalisations`);
+      texts.push(
+        t("report.departments.listElement", {
+          departmentNumber: d.idx,
+          departmentName: d.name,
+          count: d.count,
+        })
+      );
     });
     return {
       texts,
-      title: `Les départements où est naturalisé le plus de personnes :`,
+      title: t("report.departments.text"),
     };
   };
 
