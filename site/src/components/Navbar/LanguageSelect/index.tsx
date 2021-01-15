@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import FormControl from "@material-ui/core/FormControl";
 import MUISelect from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import { createMuiTheme } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
@@ -48,7 +47,7 @@ const Select = styled(MUISelect)`
   && {
     .MuiSelect-root {
       color: white;
-      background: #009e9d;
+      background: #3f51b5;
     }
     .MuiSvgIcon-root {
       color: white;

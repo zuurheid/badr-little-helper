@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import ButtonMUI from "@material-ui/core/Button";
+import React from "react";
+import MUIButton from "@material-ui/core/Button";
 
 export interface ButtonProps {
   text: string;
-  onClick: () => void;
+  onClick?: () => void;
   color?: "primary" | "secondary" | "default";
   variant?: "outlined" | "contained";
   disabled?: boolean;
@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
 }) => {
   return (
-    <ButtonMUI
+    <MUIButton
       color={color || "default"}
       onClick={onClick}
       disabled={disabled}
@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
       variant={variant || "contained"}
     >
       {text}
-    </ButtonMUI>
+    </MUIButton>
   );
 };
 
