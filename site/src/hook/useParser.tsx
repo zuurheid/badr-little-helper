@@ -2,21 +2,20 @@ import React from "react";
 import { parseFile, DecreesStats, getDecreesStats } from "../engine/engine";
 
 export enum parserStatus {
-  Success = 1,
-  Failure,
+  Done = 1,
   Loading,
 }
 
 interface parserPartialData {
   status?: parserStatus;
-  decreesStats?: DecreesStats;
-  e?: Error;
+  decreesStats?: DecreesStats | null;
+  failedFiles?: string[];
 }
 
 export interface parserData {
   status: parserStatus;
-  decreesStats?: DecreesStats;
-  e?: Error;
+  decreesStats?: DecreesStats | null;
+  failedFiles?: string[];
 }
 
 const useParser = (files: File[]) => {
@@ -28,26 +27,38 @@ const useParser = (files: File[]) => {
 
   React.useEffect(() => {
     async function parseFiles() {
-      let parsedDecrees = await Promise.all(
-        files.map(async (f) => await parseFile(f))
-      );
+      let failedFiles: string[] = [];
+      let parsedDecrees = (
+        await Promise.all(
+          files.map(async (f) => {
+            try {
+              return await parseFile(f);
+            } catch (e) {
+              failedFiles.push(f.name);
+            }
+          })
+        )
+      ).filter((el) => el != null);
+      if (parsedDecrees.length === 0) {
+        return {
+          parsedDecrees: null,
+          failedFiles,
+        };
+      }
       let mergedDecrees = ([] as any[]).concat.apply([], parsedDecrees);
-      return getDecreesStats(mergedDecrees);
+      return {
+        parsedDecrees: getDecreesStats(mergedDecrees),
+        failedFiles,
+      };
     }
 
-    parseFiles()
-      .then((r) =>
-        setPartialData({
-          status: parserStatus.Success,
-          decreesStats: r,
-        })
-      )
-      .catch((e) => {
-        setPartialData({
-          status: parserStatus.Failure,
-          e: e,
-        });
-      });
+    parseFiles().then((r) =>
+      setPartialData({
+        status: parserStatus.Done,
+        decreesStats: r.parsedDecrees,
+        failedFiles: r.failedFiles,
+      })
+    );
   }, []);
   return data;
 };

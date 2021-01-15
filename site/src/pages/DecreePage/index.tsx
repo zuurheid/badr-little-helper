@@ -20,13 +20,13 @@ const DecreePage = () => {
     setControlPanelState(controlPanelStatus.Ready);
   }, [files]);
 
-  const onStatsDisplayDone = (e: Error | null) => {
-    if (e == null) {
-      setControlPanelState(controlPanelStatus.Done);
+  const onStatsDisplayDone = (_: string[], showReport: boolean) => {
+    if (!showReport) {
+      setFiles(null);
       return;
     }
-    console.log(e);
-    setControlPanelState(controlPanelStatus.Ready);
+    setControlPanelState(controlPanelStatus.Done);
+    return;
   };
 
   const onParse = (files: File[] | null) => {
