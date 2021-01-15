@@ -12,8 +12,8 @@
       "naturalisations_1": "{{count}} натурализации",
       "naturalisations_2": "{{count}} натурализаций",
       "decree_0": "декрете {{decreeName}}",
-      "decree_1": "декртеах {{decreeName}}",
-      "decree_2": "декртеах {{decreeName}}",
+      "decree_1": "декретах {{decreeName}}",
+      "decree_2": "декретах {{decreeName}}",
       "listElement": "{{naturalisations}} в декрете {{decreeNumber}} от {{decreeDate}}"
     },
     "series": {
