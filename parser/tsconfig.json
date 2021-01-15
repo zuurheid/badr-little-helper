@@ -12,9 +12,11 @@
   },
   "exclude": [
     "./webpack.config.js",
+    "./jest.config.js",
     "node_modules",
     "lib",
     "lib-esm",
-    "_bundles"
+    "_bundles",
+    "src/**/*.test.ts"
   ]
 }

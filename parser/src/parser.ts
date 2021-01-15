@@ -22,25 +22,87 @@ export function init(pdfJSWorkerSrc?: ((version: string) => string) | string) {
 export async function parseDecreeFile(f: Uint8Array): Promise<ParsedDecree[]> {
   let doc = await getDocument(f).promise;
   let docText = await getText(doc);
-  // let expectedEntriesIDs = getExpectedEntriesIDs(docText);
   let decreesTexts = extractDecreesTexts(docText);
-  /* let parsedDecrees = */ return decreesTexts.map((t) =>
-    processDecreeText(t)
-  );
-  /*
+  return decreesTexts.map((t) => processDecreeText(t));
+}
+
+/*
+export async function parseDecreeFileLog(f: Uint8Array): Promise<ParsedDecree[]> {
+  let doc = await getDocument(f).promise;
+  let docText = await getText(doc);
+  let expectedEntriesIDs = getExpectedEntriesIDs(docText);
+  let decreesTexts = extractDecreesTexts(docText);
+  let parsedDecrees = decreesTexts.map((t) => processDecreeText(t));
   const actualNumberOfEntries = parsedDecrees.reduce(
     (acc, currEl) => acc + currEl.entries.length,
     0
   );
   console.log(
-    `expected number of entries: ${expectedEntriesIDs.length}, actual number of entries: ${actualNumberOfEntries}`
+    `expected number of entries: ${
+      expectedEntriesIDs.length
+    }, actual number of entries: ${actualNumberOfEntries} (${parsedDecrees
+      .map((d) => d.number)
+      .join(", ")})`
   );
   if (expectedEntriesIDs.length != actualNumberOfEntries) {
     checkNotFoundEntries(parsedDecrees, expectedEntriesIDs);
   }
   return parsedDecrees;
-  */
 }
+
+
+function getExpectedEntriesIDs(docText: string): entryID[] {
+  let matches = docText.match(entryIdxRe);
+  if (matches == null) {
+    return [];
+  }
+  return matches.map((m) => extractEntryID(m));
+}
+
+function checkNotFoundEntries(decrees: ParsedDecree[], expectedIDs: entryID[]) {
+  let actualEntriesIDs = new Map<string, number>();
+  decrees.forEach((d) => {
+    d.entries.forEach((e) => {
+      const id = `${e.parsed.dtNumber.DecreeID}/${e.parsed.dtNumber.ID}`;
+      if (!actualEntriesIDs.has(id)) {
+        actualEntriesIDs.set(id, 0);
+      }
+      actualEntriesIDs.set(id, actualEntriesIDs.get(id)! + 1);
+    });
+  });
+  let expectedEntriesIDs = new Map<string, number>();
+  expectedIDs.forEach((entryID) => {
+    const id = `${entryID.DecreeID}/${entryID.ID}`;
+    if (!expectedEntriesIDs.has(id)) {
+      expectedEntriesIDs.set(id, 0);
+    }
+    expectedEntriesIDs.set(id, expectedEntriesIDs.get(id)! + 1);
+  });
+  actualEntriesIDs.forEach((actualCount, actualID) => {
+    if (!expectedEntriesIDs.has(actualID)) {
+      console.log(
+        `[CHECK]: actual id ${actualID} not found among expected IDs`
+      );
+      return;
+    }
+    let expectedCount = expectedEntriesIDs.get(actualID);
+    if (expectedCount !== actualCount) {
+      console.log(
+        `[CHECK]: id ${actualID}: expected count ${expectedCount}, got ${actualCount}`
+      );
+      return;
+    }
+  });
+  expectedEntriesIDs.forEach((_, expectedID) => {
+    if (!actualEntriesIDs.has(expectedID)) {
+      console.log(
+        `[CHECK]: expected id ${expectedID} not found among actual IDs`
+      );
+      return;
+    }
+  });
+}
+*/
 
 async function getText(doc: any): Promise<string> {
   let pages = [];
@@ -54,7 +116,8 @@ async function getText(doc: any): Promise<string> {
 }
 
 const decreePreambleRe = /Décret du \d{1,2} (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre) \d{4} portant naturalisation, réintégration, mention d’enfants mineurs bénéficiant de l’effet collectif attaché à l’acquisition de la nationalité française par leurs parents/g;
-const decreeEndPositionRe = /Fait le/g;
+const decreeEndSuffix = "Fait le";
+const decreeEndPositionRe = new RegExp(decreeEndSuffix, "g");
 function extractDecreesTexts(docText: string): string[] {
   docText = removeSummaryPage(docText);
   let reResult: RegExpExecArray | null;
@@ -69,7 +132,7 @@ function extractDecreesTexts(docText: string): string[] {
   }
   let decreesEndPositions: number[] = [];
   while ((reResult = decreeEndPositionRe.exec(docText)) != null) {
-    decreesEndPositions.push(reResult.index);
+    decreesEndPositions.push(reResult.index + decreeEndSuffix.length);
   }
   decreeEndPositionRe.lastIndex = 0;
   if (decreesEndPositions.length == 0) {
@@ -217,7 +280,7 @@ function convertDatePartToNumber(p: string): number | null {
   return n;
 }
 
-const entryRe = /(Mc|\p{Lu})(\p{Lu}| |-|’)*?\(.*?\).*?née?.*?(NAT|EFF|REI|LIB).*?dép.*?Dt\..*?\./gu;
+const entryRe = /(Mc|\p{Lu})(\p{Lu}| |-|’|\.)*?\(.*?\).*?née?.*?(NAT|EFF|REI|LIB).*?dép.*?Dt\..*?\./gu;
 function parseText(text: string): Entry[] {
   text = text.replace("JOURNAL OFFICIEL DE LA RÉPUBLIQUE FRANÇAISE", "");
   text = extractPartOfDecreeWithEntries(text);
@@ -243,7 +306,10 @@ function extractPartOfDecreeWithEntries(text: string): string {
       'the passed file does not look like decree: no "Dt. XXX/X" found in the text'
     );
   }
-  const safetyPaddingPos = lastMatchInd + 50;
+  let nextFindOfPos =
+    text.indexOf(decreeEndSuffix, lastMatchInd) - lastMatchInd;
+  nextFindOfPos = nextFindOfPos != -1 ? nextFindOfPos : 250;
+  const safetyPaddingPos = lastMatchInd + nextFindOfPos;
   if (text.length <= safetyPaddingPos) {
     return text;
   }
@@ -254,10 +320,10 @@ function extractEntries(matches: RegExpMatchArray): Entry[] {
   function notEmpty(e: Entry | null): e is Entry {
     return e != null;
   }
-  return matches.map((e, idx) => extractEntry(e, idx)).filter(notEmpty);
+  return matches.map((e) => extractEntry(e)).filter(notEmpty);
 }
 
-function extractEntry(s: string, idx: number): Entry | null {
+function extractEntry(s: string): Entry | null {
   try {
     let fields = extractEntryFields(s);
     return {
@@ -279,7 +345,7 @@ function extractEntry(s: string, idx: number): Entry | null {
   }
 }
 
-const entryNameRe = /(Mc|\p{Lu})(\p{Lu}| |-|’)*?\(.*?\)/gu;
+const entryNameRe = /(Mc|\p{Lu})(\p{Lu}| |-|’|\.)*?\(.*?\)/gu;
 const entryTypeRe = /NAT|EFF|REI|LIB/gu;
 const ministryNumberRe = /\d{4}X \d{6}/g;
 const depNumRe = /dép\. (\d{2,3}|02A|02B)/g;
@@ -334,7 +400,6 @@ function extractEntryFields(
   );
   s = s.substr(ministryNumberIndex + ministryNumber.length);
   let { match: depNum, index: _ } = extractEntryField(s, depNumRe, "depNum");
-
   return {
     name,
     birthDatePlaceData: parseBirthDatePlaceStr(birthDatePlaceStr),
@@ -458,25 +523,20 @@ function extractBirthPlace(s: string): birthPlace | null {
     console.log(`[WARN]: commune not found in ${s}`);
     commune = null;
   }
-  if (communeArticle !== "") {
-    commune = `${communeArticle} ${commune}`;
-    console.log(
-      `[INFO]: commune article "${communeArticle}" found for the commune ${commune}`
-    );
-  }
   return {
     country,
     commune,
   };
 }
 
-type communeArticle = "Le" | "La" | "";
+type communeArticle = "Le" | "La" | "Les" | "";
 
 function findEndOfBirthplacePrefix(s: string): [communeArticle, number] {
   const possiblePrefixes: [string, communeArticle][] = [
     ["à ", ""],
     ["au ", "Le"],
     ["à la ", "La"],
+    ["aux", "Les"],
   ];
   let prefixPos = 0;
   for (let i = 0; i < possiblePrefixes.length; i++) {
