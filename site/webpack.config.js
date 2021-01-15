@@ -8,7 +8,7 @@ const modeDevelopment = "development";
 const modeStaging = "staging";
 const modeProduction = "production";
 
-const mode = NODE_ENV === modeProduction ? modeProduction : modeDevelopment;
+const mode = NODE_ENV === modeDevelopment ? modeDevelopment : modeProduction;
 const publicPath =
   NODE_ENV === modeProduction
     ? "https://zuurheid.github.io/badr-little-helper"
