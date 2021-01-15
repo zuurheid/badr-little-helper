@@ -48,5 +48,11 @@
       "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
       "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями"
     }
+  },
+  "alerts": {
+    "parseFileFailed_0": "не удалось обработать файл \"{{fileName}}\"",
+    "parseFileFailed_1": "не удалось обработать {{count}} файла",
+    "parseFileFailed_plural": "не удалось обработать {{count}} файлов",
+    "parseAllFilesFailed": "файлы не удалось обработать"
   }
 }

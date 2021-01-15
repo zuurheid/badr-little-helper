@@ -41,5 +41,10 @@
       "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisation",
       "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisations"
     }
+  },
+  "alerts": {
+    "parseFileFailed": "failed to process the file \"{{fileName}}\"",
+    "parseFileFailed_plural": "failed to process {{count}} files",
+    "parseAllFilesFailed": "failed to process the passed files"
   }
 }
