@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  ReadFile,
-  PrepareStats,
-  ParsedDecree,
-  decreesStats,
-} from "../engine/engine";
+import { parseFile, DecreesStats, getDecreesStats } from "../engine/engine";
 
 export enum parserStatus {
   Success = 1,
@@ -14,13 +9,13 @@ export enum parserStatus {
 
 interface parserPartialData {
   status?: parserStatus;
-  decreesStats?: decreesStats;
+  decreesStats?: DecreesStats;
   e?: Error;
 }
 
 export interface parserData {
   status: parserStatus;
-  decreesStats?: decreesStats;
+  decreesStats?: DecreesStats;
   e?: Error;
 }
 
@@ -34,10 +29,10 @@ const useParser = (files: File[]) => {
   React.useEffect(() => {
     async function parseFiles() {
       let parsedDecrees = await Promise.all(
-        files.map(async (f) => await ReadFile(f))
+        files.map(async (f) => await parseFile(f))
       );
       let mergedDecrees = ([] as any[]).concat.apply([], parsedDecrees);
-      return await PrepareStats(mergedDecrees);
+      return getDecreesStats(mergedDecrees);
     }
 
     parseFiles()

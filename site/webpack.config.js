@@ -49,6 +49,7 @@ var config = {
   },
   plugins: [
     new HTMLWebpackPlugin({
+      favicon: path.resolve(__dirname, "public/favicon.ico"),
       template: path.resolve(__dirname, "public/index.html"),
       publicPath:
         mode === modeProduction
