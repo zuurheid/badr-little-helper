@@ -2,20 +2,17 @@ import React from "react";
 import { DecreesStats } from "../../../engine/engine";
 import Article from "../Article";
 import { ListBlock, TextBlock } from "../TextBlocks";
+import { useTranslation } from "react-i18next";
 
 interface SummaryProps {
   stats: DecreesStats;
 }
 
 const Summary: React.FC<SummaryProps> = ({ stats }) => {
-  const getDecreeName = (title: { date: Date | null; number: string }) => {
-    if (title.date === null) {
-      return `${title.number}`;
-    }
-    let date = `${title.date.getDay()} ${
-      frenchMonthsNames[title.date.getMonth()]
-    } ${title.date.getFullYear()}`;
-    return `${title.number} de ${date}`;
+  const { t } = useTranslation();
+
+  const getDecreeDate = (date: Date) => {
+    return new Intl.DateTimeFormat("fr-FR").format(date);
   };
 
   let decreesTitles = stats.decrees.map((d) => ({
@@ -41,52 +38,45 @@ const Summary: React.FC<SummaryProps> = ({ stats }) => {
     (acc, currEl) => acc + currEl.entries.length,
     0
   );
-  if (decreesTitles.length === 1) {
-    return (
-      <Article
-        title="Sommaire"
-        body={[
-          <TextBlock
-            text={`${
-              decreesTitles[0].entriesCount
-            } naturalisés dans le décret ${getDecreeName(decreesTitles[0])}`}
-          />,
-        ]}
-      />
-    );
-  }
   return (
     <Article
-      title="Sommaire"
+      title={t("report.summary.header")}
       body={[
         <TextBlock
-          text={`Nombre total de naturalisations dans les ${stats.decrees.length} décrets : ${totalNaturalisationsNumber}`}
+          text={t("report.summary.text", {
+            count: decreesTitles.length,
+            naturalisations: t("report.summary.naturalisations", {
+              count: totalNaturalisationsNumber,
+            }),
+            decree: t("report.summary.decree", {
+              count: decreesTitles.length,
+              decreeName: decreesTitles.map((t) => t.number).join(", "),
+            }),
+            decreeDate:
+              decreesTitles.length > 1
+                ? null
+                : getDecreeDate(decreesTitles[0].date!),
+          })}
         />,
-        <ListBlock
-          elements={decreesTitles.map(
-            (d) =>
-              `${d.entriesCount} naturalisés dans le décret ${getDecreeName(d)}`
-          )}
-          type="unordered"
-        />,
+        decreesTitles.length > 1 ? (
+          <ListBlock
+            elements={decreesTitles.map((d) =>
+              t("report.summary.listElement", {
+                naturalisations: t("report.summary.naturalisations", {
+                  count: d.entriesCount,
+                }),
+                decreeNumber: d.number,
+                decreeDate: getDecreeDate(d.date!),
+              })
+            )}
+            type="unordered"
+          />
+        ) : (
+          <></>
+        ),
       ]}
     />
   );
 };
-
-const frenchMonthsNames = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "julliet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-];
 
 export default Summary;

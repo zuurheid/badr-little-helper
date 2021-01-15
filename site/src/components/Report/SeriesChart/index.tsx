@@ -4,6 +4,7 @@ import { TextBlock, HeaderBlock, ListBlock } from "../TextBlocks";
 import Article from "../Article";
 import s from "./SeriesChart.module.scss";
 import sReport from "../Report.module.scss";
+import { useTranslation } from "react-i18next";
 
 export interface ministrySeriesDataElement {
   series: string;
@@ -19,6 +20,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
   data,
   decreesNumbers,
 }) => {
+  const { t } = useTranslation();
   const divID = "series-chart";
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
 
     svg
       .append("g")
-      .attr("fill", "steelblue")
+      .attr("fill", "#3f51b5")
       .selectAll("rect")
       .data(data)
       .join("rect")
@@ -89,19 +91,21 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
     svg
       .append("text")
       .attr("class", sReport.axisLabel)
+      .attr("id", "y-axis-label")
       .attr("transform", "rotate(-90)")
       .attr("y", margin.left / 4 + 10)
       .attr("x", 0 - height / 2)
       .style("text-anchor", "middle")
-      .text("Nombre de naturalisations");
+      .text(t("report.series.graph.yAxisLabel"));
 
     svg
       .append("text")
       .attr("class", sReport.axisLabel)
+      .attr("id", "x-axis-label")
       .attr("x", width / 2)
       .attr("y", height - 10)
       .style("text-anchor", "middle")
-      .text("Séries Rezé");
+      .text(t("report.series.graph.xAxisLabel"));
 
     svg
       .attr("border", 1)
@@ -114,6 +118,15 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .style("fill", "none")
       .style("stroke-width", 1);
   }, []);
+
+  useEffect(() => {
+    d3.selectAll(`#${divID} #y-axis-label`).each(function () {
+      d3.select(this).text(t("report.series.graph.yAxisLabel"));
+    });
+    d3.selectAll(`#${divID} #x-axis-label`).each(function () {
+      d3.select(this).text(t("report.series.graph.xAxisLabel"));
+    });
+  });
 
   return (
     <>
@@ -131,7 +144,10 @@ interface seriesChartTitleProps {
 const SeriesChartTitle: React.FC<seriesChartTitleProps> = ({
   elementsCount,
 }) => {
-  const text = `Top ${elementsCount} des séries REZE selon le nombre de naturalisations`;
+  const { t } = useTranslation();
+  const text = t("report.series.header", {
+    seriesCount: elementsCount,
+  });
   return <HeaderBlock text={text} />;
 };
 
@@ -145,6 +161,7 @@ const SeriesChartText: React.FC<seriesChartTextProps> = ({
   decreesNumbers,
   data,
 }) => {
+  const { t } = useTranslation();
   const getText = () => {
     let dataCopy = data.slice().sort((a, b) => (a.count > b.count ? -1 : 1));
     const entriesCount = 4;
@@ -160,16 +177,14 @@ const SeriesChartText: React.FC<seriesChartTextProps> = ({
     }, new Map<number, string[]>());
     let textsToStore: string[] = [];
     dataCopyMap.forEach((series, count) => {
-      const naturalisationCountStr = `${count} naturalisation${
-        count > 1 ? "s" : ""
-      }`;
-      let seriesStr: string;
-      if (series.length === 1) {
-        seriesStr = `de la série ${series[0]}`;
-      } else {
-        seriesStr = `des séries ${series.join(", ")}`;
-      }
-      textsToStore.push(`${naturalisationCountStr} ${seriesStr}`);
+      textsToStore.push(
+        `${t("report.series.list.naturalisations", {
+          count,
+        })} ${t("report.series.list.series", {
+          count: series.length,
+          series: series.join(", "),
+        })}`
+      );
     });
     return {
       texts: textsToStore,
@@ -178,10 +193,11 @@ const SeriesChartText: React.FC<seriesChartTextProps> = ({
   };
 
   const getTitle = (decreesNumbers: string[]) => {
-    let decreeStrPart = decreesNumbers.length > 1 ? "les décrets" : "le décret";
-    return `Séries les plus naturalisées dans ${decreeStrPart} ${decreesNumbers.join(
-      ", "
-    )}:`;
+    return `${t("report.series.text.static", {
+      decrees: `${t("report.series.text.decree", {
+        count: decreesNumbers.length,
+      })} ${decreesNumbers.join(", ")}`,
+    })}`;
   };
 
   let { title, texts } = getText();

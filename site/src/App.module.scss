@@ -2,10 +2,19 @@ body {
   background-color: #f4f4f4;
 }
 
+* > body {
+  margin: 0;
+  box-sizing: border-box;
+}
+
 .root {
   display: flex;
   justify-content: center;
   min-width: 300px;
   max-width: 1024px;
   margin: auto;
+}
+
+.navbar {
+  margin-bottom: 2%;
 }

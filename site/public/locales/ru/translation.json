@@ -1,0 +1,52 @@
+{
+  "uploadButton": "Выберите декрет",
+  "analyseButton": "Обработать",
+  "resetButton": "Сбросить",
+  "report": {
+    "summary": {
+      "header": "Общий итог",
+      "text_0": "{{naturalisations}} в {{decree}} от {{decreeDate}}",
+      "text_1": "{{naturalisations}} в {{decree}}:",
+      "text_2": "{{naturalisations}} в {{decree}}:",
+      "naturalisations_0": "{{count}} натурализация",
+      "naturalisations_1": "{{count}} натурализации",
+      "naturalisations_2": "{{count}} натурализаций",
+      "decree_0": "декрете {{decreeName}}",
+      "decree_1": "декртеах {{decreeName}}",
+      "decree_2": "декртеах {{decreeName}}",
+      "listElement": "{{naturalisations}} в декрете {{decreeNumber}} от {{decreeDate}}"
+    },
+    "series": {
+      "header": "Топ {{seriesCount}} серий REZE по количеству натурализаций",
+      "graph": {
+        "yAxisLabel": "Количество натурализаций",
+        "xAxisLabel": "Серии REZE"
+      },
+      "text": {
+        "static": "Серии в {{decrees}} с наибольшим количеством натурализаций:",
+        "decree_0": "декрете",
+        "decree_1": "декретах",
+        "decree_2": "декретах"
+      },
+      "list": {
+        "series_0": "в серии {{series}}",
+        "series_1": "в сериях {{series}}",
+        "series_2": "в сериях {{series}}",
+        "naturalisations_0": "{{count}} натурализация",
+        "naturalisations_1": "{{count}} натурализации",
+        "naturalisations_2": "{{count}} натурализаций"
+      }
+    },
+    "departments": {
+      "header": "Топ {{departmentsCount}} префектур по количеству натурализаций",
+      "graph": {
+        "yAxisLabel": "Департаменты",
+        "xAxisLabel": "Количество натурализаций"
+      },
+      "text": "Департаменты с наибольшим количеством натурализаций :",
+      "listElement_0": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализацией",
+      "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
+      "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями"
+    }
+  }
+}
