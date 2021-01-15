@@ -35,7 +35,7 @@ const Summary: React.FC<SummaryProps> = ({ stats }) => {
     return a.date > b.date ? 1 : a.date < b.date ? -1 : numberComparisonResult;
   });
   let totalNaturalisationsNumber = stats.decrees.reduce(
-    (acc, currEl) => acc + currEl.entries.length,
+    (acc, currEl) => acc + currEl.naturalizationsCount,
     0
   );
   return (
