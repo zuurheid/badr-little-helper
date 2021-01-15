@@ -9,9 +9,7 @@ const App = () => {
   return (
     <>
       <Suspense fallback="">
-        <div className={s.navbar}>
-          <Navbar />
-        </div>
+        <Navbar />
         <div className={s.root}>
           <DecreePage />
         </div>

@@ -5,12 +5,17 @@ import ControlPanel, {
   controlPanelStatus,
 } from "../../components/ControlPanel";
 import StatsDisplay from "../../components/Report/StatsDisplay";
+import FailedParsingAlert from "../../components/FailedParsingAlert";
 
 const DecreePage = () => {
   let [controlPanelState, setControlPanelState] = useState<controlPanelStatus>(
     controlPanelStatus.Ready
   );
   let [files, setFiles] = useState<File[] | null>(null);
+  let [failedFiles, setFailedFiles] = useState<{
+    files: string[];
+    allFailed: boolean;
+  } | null>(null);
 
   useEffect(() => {
     if (files != null) {
@@ -20,13 +25,17 @@ const DecreePage = () => {
     setControlPanelState(controlPanelStatus.Ready);
   }, [files]);
 
-  const onStatsDisplayDone = (e: Error | null) => {
-    if (e == null) {
-      setControlPanelState(controlPanelStatus.Done);
+  const onStatsDisplayDone = (failedFiles: string[], showReport: boolean) => {
+    setFailedFiles({
+      files: failedFiles,
+      allFailed: files !== null && failedFiles.length === files.length,
+    });
+    if (!showReport) {
+      setFiles(null);
       return;
     }
-    console.log(e);
-    setControlPanelState(controlPanelStatus.Ready);
+    setControlPanelState(controlPanelStatus.Done);
+    return;
   };
 
   const onParse = (files: File[] | null) => {
@@ -38,30 +47,39 @@ const DecreePage = () => {
   };
 
   return (
-    <Grid container>
-      <Grid item xs={1} />
-      <Grid item xs={10}>
-        <div className={s.controlPanelBlock}>
-          <ControlPanel
-            onParse={onParse}
-            status={controlPanelState}
-            onReset={onReset}
-          />
-        </div>
+    <>
+      <Grid container>
+        <Grid item xs={1} />
+        <Grid item xs={10}>
+          <div className={s.controlPanelBlock}>
+            <ControlPanel
+              onParse={onParse}
+              status={controlPanelState}
+              onReset={onReset}
+            />
+          </div>
+        </Grid>
+        {files != null && (
+          <>
+            <Grid item xs={1} />
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <div className={s.report}>
+                <StatsDisplay files={files} onDone={onStatsDisplayDone} />
+              </div>
+            </Grid>
+            <Grid item xs={1} />
+          </>
+        )}
       </Grid>
-      {files != null && (
-        <>
-          <Grid item xs={1} />
-          <Grid item xs={1} />
-          <Grid item xs={10}>
-            <div className={s.report}>
-              <StatsDisplay files={files} onDone={onStatsDisplayDone} />
-            </div>
-          </Grid>
-          <Grid item xs={1} />
-        </>
+      {failedFiles != null && (
+        <FailedParsingAlert
+          failedFiles={failedFiles.files}
+          allFailed={failedFiles.allFailed}
+          severity={failedFiles.allFailed ? "error" : "warning"}
+        />
       )}
-    </Grid>
+    </>
   );
 };
 

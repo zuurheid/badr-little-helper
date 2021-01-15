@@ -31,7 +31,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
   onReset,
   status,
 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   let [files, setFiles] = useState<FileToParse[] | null>(null);
 
   const onChange = (files: FileList | null) => {
@@ -99,6 +99,7 @@ const ControlPanel: React.FC<controlPanelProps> = ({
 
   const onParseClick = () => {
     onParse(files != null ? files.map((file) => file.f) : null);
+    setFiles(null);
   };
 
   switch (status) {

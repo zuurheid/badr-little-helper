@@ -4,12 +4,10 @@ import Report from "../index";
 
 interface StatsDisplayProps {
   files: File[] | null;
-  onDone: (e: Error | null) => void;
+  onDone: (failedFiles: string[], showReport: boolean) => void;
 }
 
 const StatsDisplay: React.FC<StatsDisplayProps> = ({ files, onDone }) => {
-  let [error, setError] = useState<Error | null>(null);
-
   if (files == null) {
     return <div>No data to show</div>;
   }
@@ -20,22 +18,18 @@ const StatsDisplay: React.FC<StatsDisplayProps> = ({ files, onDone }) => {
     if (data.status === parserStatus.Loading) {
       return;
     }
-    onDone(error);
+    onDone(data.failedFiles!, data.decreesStats != null);
   }, [data]);
 
   switch (data.status) {
     case parserStatus.Loading: {
       return <></>;
     }
-    case parserStatus.Success: {
+    case parserStatus.Done: {
       if (data.decreesStats == null) {
-        throw new Error("parsed decrees stats are null");
+        return <></>;
       }
       return <Report decreesStats={data.decreesStats} />;
-    }
-    case parserStatus.Failure: {
-      setError(data.e!);
-      return <></>;
     }
   }
 };

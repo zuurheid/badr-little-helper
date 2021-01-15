@@ -41,5 +41,10 @@
       "listElement": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisation",
       "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisations"
     }
+  },
+  "alerts": {
+    "parseFileFailed": "fichier \"{{fileName}}\" n'a pas pu être traité",
+    "parseFileFailed_plural": "{{count}} fichiers n'ont pas pu être traités",
+    "parseAllFilesFailed": "les fichiers n'ont pas pu être traités"
   }
 }
