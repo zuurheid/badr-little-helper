@@ -1,0 +1,50 @@
+{
+  "uploadButton": "Choose decree file",
+  "analyseButton": "Start analysis",
+  "resetButton": "Reset",
+  "report": {
+    "summary": {
+      "header": "Summary",
+      "text": "{{naturalisations}} in the {{decree}} of {{decreeDate}}",
+      "text_plural": "{{naturalisations}} in the {{decree}}:",
+      "naturalisations": "{{count}} naturalisation",
+      "naturalisations_plural": "{{count}} naturalisations",
+      "decree": "decree {{decreeName}}",
+      "decree_plural": "decrees {{decreeName}}",
+      "listElement": "{{naturalisations}} in the decree {{decreeNumber}} of {{decreeDate}}"
+    },
+    "series": {
+      "header": "Top {{seriesCount}} REZE series by the number of naturalisations",
+      "graph": {
+        "yAxisLabel": "Number of naturalisations",
+        "xAxisLabel": "REZE Series"
+      },
+      "text": {
+        "static": "Series with the most of naturalisations in {{decrees}}:",
+        "decree": "decree",
+        "decree_plural": "decrees"
+      },
+      "list": {
+        "series": "of the series {{series}}",
+        "series_plural": "of the series {{series}}",
+        "naturalisations": "{{count}} naturalisation",
+        "naturalisations_plural": "{{count}} naturalisations"
+      }
+    },
+    "departments": {
+      "header": "Top {{departmentsCount}} prefectures by the number of naturalisations",
+      "graph": {
+        "yAxisLabel": "Departments",
+        "xAxisLabel": "Number of naturalisations"
+      },
+      "text": "Departments with the most of naturalisations:",
+      "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisation",
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisations"
+    }
+  },
+  "alerts": {
+    "parseFileFailed": "failed to process the file \"{{fileName}}\"",
+    "parseFileFailed_plural": "failed to process {{count}} files",
+    "parseAllFilesFailed": "failed to process the passed files"
+  }
+}

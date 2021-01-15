@@ -1,0 +1,50 @@
+{
+  "uploadButton": "Choisissez le fichier décret",
+  "analyseButton": "Démarrer l'analyse",
+  "resetButton": "Réinitialiser",
+  "report": {
+    "summary": {
+      "header": "Sommaire",
+      "text": "{{naturalisations}} dans {{decree}} de {{decreeDate}}",
+      "text_plural": "{{naturalisations}} dans {{decree}} :",
+      "naturalisations": "{{count}} naturalisé",
+      "naturalisations_plural": "{{count}} naturalisés",
+      "decree": "le décret {{decreeName}}",
+      "decree_plural": "les décrets {{decreeName}}",
+      "listElement": "{{naturalisations}} dans le décret {{decreeNumber}} de {{decreeDate}}"
+    },
+    "series": {
+      "header": "Top {{seriesCount}} des séries REZE selon le nombre de naturalisations",
+      "graph": {
+        "yAxisLabel": "Nombre de naturalisations",
+        "xAxisLabel": "Séries REZE"
+      },
+      "text": {
+        "static": "Séries les plus naturalisées dans {{decrees}} :",
+        "decree": "le décret",
+        "decree_plural": "les décrets"
+      },
+      "list": {
+        "series": "de la série {{series}}",
+        "series_plural": "des séries {{series}}",
+        "naturalisations": "{{count}} naturalisation",
+        "naturalisations_plural": "{{count}} naturalisations"
+      }
+    },
+    "departments": {
+      "header": "Top {{departmentsCount}} des préfectures selon le nombre de naturalisations",
+      "graph": {
+        "yAxisLabel": "Départments",
+        "xAxisLabel": "Nombre de naturalisations"
+      },
+      "text": "Les départements où est naturalisé le plus de personnes :",
+      "listElement": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisation",
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisations"
+    }
+  },
+  "alerts": {
+    "parseFileFailed": "fichier \"{{fileName}}\" n'a pas pu être traité",
+    "parseFileFailed_plural": "{{count}} fichiers n'ont pas pu être traités",
+    "parseAllFilesFailed": "les fichiers n'ont pas pu être traités"
+  }
+}
