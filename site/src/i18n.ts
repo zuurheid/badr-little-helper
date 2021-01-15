@@ -13,7 +13,7 @@ i18n
     preload: ["fr", "en", "ru"],
     ns: ["translation"],
     backend: {
-      loadpath: "/locales/{{lng}}/{{ns}}.json",
+      loadPath: _BASE_URL_ + `locales/{{lng}}/{{ns}}.json`,
     },
     interpolation: { escapeValue: false },
   });

@@ -1,12 +1,26 @@
 const path = require("path");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const webpack = require("webpack");
 const NODE_ENV = process.env.NODE_ENV;
 
 const modeDevelopment = "development";
+const modeStaging = "staging";
 const modeProduction = "production";
 
-const mode = NODE_ENV === modeDevelopment ? modeDevelopment : modeProduction;
+const mode = NODE_ENV === modeProduction ? modeProduction : modeDevelopment;
+const publicPath =
+  NODE_ENV === modeProduction
+    ? "https://zuurheid.github.io/badr-little-helper"
+    : NODE_ENV === modeStaging
+    ? "https://zuurheid.github.io/staging-badr-little-helper"
+    : "auto";
+const baseUrl =
+  NODE_ENV === modeProduction
+    ? "https://zuurheid.github.io/badr-little-helper/"
+    : NODE_ENV === modeStaging
+    ? "https://zuurheid.github.io/staging-badr-little-helper/"
+    : "/";
 
 var config = {
   resolve: {
@@ -52,14 +66,11 @@ var config = {
     new HTMLWebpackPlugin({
       favicon: path.resolve(__dirname, "public/favicon.ico"),
       template: path.resolve(__dirname, "public/index.html"),
-      publicPath:
-        mode === modeProduction
-          ? "https://zuurheid.github.io/badr-little-helper"
-          : "auto",
-      baseUrl:
-        mode === modeProduction
-          ? "https://zuurheid.github.io/badr-little-helper"
-          : "/",
+      publicPath,
+      baseUrl,
+    }),
+    new webpack.DefinePlugin({
+      _BASE_URL_: JSON.stringify(baseUrl),
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: "public/locales", to: "locales" }],
