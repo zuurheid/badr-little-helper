@@ -348,7 +348,7 @@ function extractEntry(s: string): Entry | null {
 const entryNameRe = /(Mc|\p{Lu})(\p{Lu}| |-|’|\.)*?\(.*?\)/gu;
 const entryTypeRe = /NAT|EFF|REI|LIB/gu;
 const ministryNumberRe = /\d{4}X \d{6}/g;
-const depNumRe = /dép\. (\d{2,3}|02A|02B)/g;
+const depNumRe = /dép\. (02[AB]|\d{2,3})/g;
 const entryIdxRe = /Dt\. \d*\/\d*/g;
 function extractEntryFields(
   s: string

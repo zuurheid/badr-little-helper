@@ -371,8 +371,11 @@ const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
           style="em"
         />
       </div>
-
-      <FormControl variant="outlined" size="small">
+      <FormControl
+        variant="outlined"
+        size="small"
+        classes={{ root: s.formControl }}
+      >
         <Select
           value={customDepartment == null ? emptyElement : customDepartment.idx}
           onChange={handleChange}
