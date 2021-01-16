@@ -7,7 +7,11 @@ import {
 import SeriesChart, { ministrySeriesDataElement } from "./SeriesChart";
 import s from "./Report.module.scss";
 import Summary from "./Summary";
-import { DepartmentsChart, departmentsDataElement } from "./DepartmentsChart";
+import {
+  DepartmentsChart,
+  departmentsDataElement,
+  departmentsChartProps,
+} from "./DepartmentsChart";
 
 interface ReportProps {
   decreesStats: DecreesStats;
@@ -25,7 +29,7 @@ const Report: React.FC<ReportProps> = ({ decreesStats }) => {
         data={seriesData}
       />
       <DepartmentsChart
-        data={getDepartmentsData(decreesStats.totalStats.totalDepartmentsStats)}
+        {...getDepartmentsData(decreesStats.totalStats.totalDepartmentsStats)}
       />
     </div>
   );
@@ -81,9 +85,7 @@ function ministryNumberStatsToMinistrySeriesDataElements(
   });
 }
 
-function getDepartmentsData(
-  stats: TotalDepartments[]
-): departmentsDataElement[] {
+function getDepartmentsData(stats: TotalDepartments[]): departmentsChartProps {
   let statsCopy = stats.slice();
   const departmentsDataLength = 10;
   statsCopy.sort((a, b) =>
@@ -95,9 +97,14 @@ function getDepartmentsData(
       ? 1
       : -1
   );
-  return departmentsStatsToDepartmentsDataElements(
-    statsCopy.slice(0, departmentsDataLength)
-  );
+  return {
+    topDepartments: departmentsStatsToDepartmentsDataElements(
+      statsCopy.slice(0, departmentsDataLength)
+    ),
+    rest: departmentsStatsToDepartmentsDataElements(
+      statsCopy.slice(departmentsDataLength)
+    ),
+  };
 }
 
 function departmentsStatsToDepartmentsDataElements(

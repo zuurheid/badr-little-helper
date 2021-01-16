@@ -1,5 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 import { HeaderBlock, ListBlock, TextBlock } from "../TextBlocks";
 import Article from "../Article";
 import s from "../Report.module.scss";
@@ -11,16 +15,24 @@ export interface departmentsDataElement {
   count: number;
 }
 
-interface departmentsChartProps {
-  data: departmentsDataElement[];
+export interface departmentsChartProps {
+  topDepartments: departmentsDataElement[];
+  rest: departmentsDataElement[];
 }
 
-export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
+export const DepartmentsChart: React.FC<departmentsChartProps> = ({
+  topDepartments,
+  rest,
+}) => {
   const { t } = useTranslation();
   const divID = "departments-chart";
+  let [
+    customDepartment,
+    setCustomDepartment,
+  ] = useState<departmentsDataElement | null>();
 
-  useEffect(() => {
-    if (data.length === 0) {
+  const createChart = () => {
+    if (topDepartments.length === 0) {
       throw new Error("passed data set is empty");
     }
     // TODO: share this code with other charts
@@ -31,7 +43,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
       .select(`#${divID}`)
       .append("svg")
       .attr("viewBox", `0 0 ${width} ${height}`);
-    let maxCount = data.reduce((maxCount, c) => {
+    let maxCount = topDepartments.reduce((maxCount, c) => {
       if (c.count > maxCount) {
         return c.count;
       }
@@ -44,7 +56,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
       .range([margin.left, width - margin.right]);
     const y = d3
       .scaleBand()
-      .domain(data.map((d) => d.idx))
+      .domain(topDepartments.map((d) => d.idx))
       .rangeRound([margin.top, height - margin.bottom])
       .paddingInner(0.6);
 
@@ -52,7 +64,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
       .append("g")
       .attr("fill", "#3f51b5")
       .selectAll("rect")
-      .data(data)
+      .data(topDepartments)
       .join("rect")
       .attr("x", margin.left)
       .attr("y", (d) => y(d.idx) as any)
@@ -76,7 +88,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
     svg
       .append("g")
       .selectAll("text")
-      .data(data)
+      .data(topDepartments)
       .enter()
       .append("text")
       .attr("class", s.barValue)
@@ -113,6 +125,10 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
       .style("stroke", "black")
       .style("fill", "none")
       .style("stroke-width", 1);
+  };
+
+  useEffect(() => {
+    createChart();
   }, []);
 
   useEffect(() => {
@@ -124,11 +140,16 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({ data }) => {
     });
   });
 
+  useEffect(() => {
+    console.log("customDepartment changed: ", customDepartment);
+  }, [customDepartment]);
+
   return (
     <>
-      <DepartmentsChartTitle elementsCount={data.length} />
+      <DepartmentsChartTitle elementsCount={topDepartments.length} />
       <div className={s.container} id={divID} />
-      <DepartmentsChartText data={data} />
+      <DepartmentSelector departments={rest} />
+      <DepartmentsChartText data={topDepartments} />
     </>
   );
 };
@@ -188,5 +209,54 @@ const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
         <ListBlock elements={texts} type="unordered" />,
       ]}
     />
+  );
+};
+
+interface DepartmentSelectorProps {
+  departments: departmentsDataElement[];
+}
+
+const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
+  departments,
+}) => {
+  let [
+    customDepartment,
+    setCustomDepartment,
+  ] = useState<departmentsDataElement | null>(null);
+
+  const handleChange = (e: any) => {
+    console.log(e.target.value);
+    const customDeptFiltered = departments.filter(
+      (d) => d.idx === e.target.value
+    );
+    const newCustomDept =
+      customDeptFiltered.length === 1 ? customDeptFiltered[0] : null;
+    console.log(newCustomDept);
+    setCustomDepartment(newCustomDept);
+  };
+
+  const emptyElement = "None";
+
+  return (
+    <div>
+      <span>Choose: </span>
+      <FormControl variant="outlined">
+        <Select
+          value={customDepartment == null ? emptyElement : customDepartment.idx}
+          onChange={handleChange}
+        >
+          <MenuItem value={emptyElement}>
+            <em>{emptyElement}</em>
+          </MenuItem>
+          {departments
+            .sort((a, b) => (a.idx > b.idx ? 1 : -1))
+            .map((d) => (
+              <MenuItem key={d.idx} value={d.idx}>
+                {d.idx} ({d.name})
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+    </div>
   );
 };
