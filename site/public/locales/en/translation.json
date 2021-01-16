@@ -38,8 +38,8 @@
         "xAxisLabel": "Number of naturalisations"
       },
       "text": "Departments with the most of naturalisations:",
-      "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisation",
-      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisations",
+      "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisation",
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisations",
       "selector": {
         "selectorText": "Show a department:",
         "naOption": "NA"

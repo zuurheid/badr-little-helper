@@ -172,7 +172,7 @@ const SeriesChartText: React.FC<seriesChartTextProps> = ({
       if (!m.has(currEntry.count)) {
         m.set(currEntry.count, []);
       }
-      m.get(currEntry.count)!.push(currEntry.series);
+      m.get(currEntry.count)!.push(currEntry.series.replace(/\s+/g, "\u00A0"));
       return m;
     }, new Map<number, string[]>());
     let textsToStore: string[] = [];

@@ -6,7 +6,7 @@
     "summary": {
       "header": "Sommaire",
       "text": "{{naturalisations}} dans {{decree}} de {{decreeDate}}",
-      "text_plural": "{{naturalisations}} dans {{decree}} :",
+      "text_plural": "{{naturalisations}} dans {{decree}}\u00A0:",
       "naturalisations": "{{count}} naturalisé",
       "naturalisations_plural": "{{count}} naturalisés",
       "decree": "le décret {{decreeName}}",
@@ -20,7 +20,7 @@
         "xAxisLabel": "Séries REZE"
       },
       "text": {
-        "static": "Séries les plus naturalisées dans {{decrees}} :",
+        "static": "Séries les plus naturalisées dans {{decrees}}\u00A0:",
         "decree": "le décret",
         "decree_plural": "les décrets"
       },
@@ -37,11 +37,11 @@
         "yAxisLabel": "Départments",
         "xAxisLabel": "Nombre de naturalisations"
       },
-      "text": "Les départements où est naturalisé le plus de personnes :",
-      "listElement": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisation",
-      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisations",
+      "text": "Les départements où est naturalisé le plus de personnes\u00A0:",
+      "listElement": "{{departmentNumber}} ({{departmentName}}) avec {{count}}\u00A0naturalisation",
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}}\u00A0naturalisations",
       "selector": {
-        "selectorText": "Afficher un département :",
+        "selectorText": "Afficher un département\u00A0:",
         "naOption": "Non Attribué"
       }
     }

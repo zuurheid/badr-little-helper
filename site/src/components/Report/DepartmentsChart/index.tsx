@@ -374,7 +374,6 @@ const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
 
       <FormControl variant="outlined" size="small">
         <Select
-          autoWidth={true}
           value={customDepartment == null ? emptyElement : customDepartment.idx}
           onChange={handleChange}
         >

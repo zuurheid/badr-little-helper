@@ -44,9 +44,9 @@
         "xAxisLabel": "Количество натурализаций"
       },
       "text": "Департаменты с наибольшим количеством натурализаций :",
-      "listElement_0": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализацией",
-      "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
-      "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
+      "listElement_0": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализацией",
+      "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализациями",
+      "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализациями",
       "selector": {
         "selectorText": "Показать департамент:",
         "naOption": "-- Не выбран --"
