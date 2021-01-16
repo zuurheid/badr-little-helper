@@ -46,7 +46,11 @@
       "text": "Департаменты с наибольшим количеством натурализаций :",
       "listElement_0": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализацией",
       "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
-      "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями"
+      "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}} натурализациями",
+      "selector": {
+        "selectorText": "Показать департамент:",
+        "naOption": "-- Не выбран --"
+      }
     }
   },
   "alerts": {

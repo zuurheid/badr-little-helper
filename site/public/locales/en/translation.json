@@ -39,7 +39,11 @@
       },
       "text": "Departments with the most of naturalisations:",
       "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisation",
-      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisations"
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}} naturalisations",
+      "selector": {
+        "selectorText": "Show a department:",
+        "naOption": "NA"
+      }
     }
   },
   "alerts": {

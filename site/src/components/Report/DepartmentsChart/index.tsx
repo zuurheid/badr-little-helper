@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import Select from "../../Select";
 import { HeaderBlock, ListBlock, TextBlock } from "../TextBlocks";
 import Article from "../Article";
-import s from "../Report.module.scss";
+import s from "./DepartmentsChart.module.scss";
+import sReport from "../Report.module.scss";
 import { useTranslation } from "react-i18next";
 
 export interface departmentsDataElement {
@@ -71,7 +72,8 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
 
     const svg = d3
       .select(`#${divID}`)
-      .append("svg")
+      .insert("svg", ":first-child")
+      .attr("class", sReport.chartSVG)
       .attr("viewBox", `0 0 ${width} ${height}`);
 
     svg
@@ -89,14 +91,14 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     svg
       .append("g")
       .attr("id", "x-axis")
-      .attr("class", s.axis)
+      .attr("class", sReport.axis)
       .attr("transform", `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(xScale).ticks(null));
 
     svg
       .append("g")
       .attr("id", "y-axis")
-      .attr("class", s.axis)
+      .attr("class", sReport.axis)
       .attr("transform", `translate(${margin.left}, 0)`)
       .call(d3.axisLeft(yScale).ticks(null));
 
@@ -107,14 +109,14 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .data(topDepartments)
       .enter()
       .append("text")
-      .attr("class", s.barValue)
+      .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
       .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
 
     svg
       .append("text")
-      .attr("class", s.axisLabel)
+      .attr("class", sReport.axisLabel)
       .attr("id", "y-axis-label")
       .attr("transform", "rotate(-90)")
       .attr("y", margin.left / 4 + 10)
@@ -124,7 +126,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
 
     svg
       .append("text")
-      .attr("class", s.axisLabel)
+      .attr("class", sReport.axisLabel)
       .attr("id", "x-axis-label")
       .attr("x", width / 2)
       .attr("y", height - 10)
@@ -173,7 +175,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     bars
       .enter()
       .append("rect")
-      .attr("fill", s.customBarColor)
+      .attr("fill", sReport.customBarColor)
       .merge(bars as any)
       .transition()
       .attr("x", margin.left)
@@ -193,7 +195,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .append("text")
       .merge(labels as any)
       .transition()
-      .attr("class", s.barValue)
+      .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
       .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
@@ -236,7 +238,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     labelsToRemove
       .merge(labels as any)
       .transition()
-      .attr("class", s.barValue)
+      .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
       .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
@@ -265,11 +267,12 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
   return (
     <>
       <DepartmentsChartTitle elementsCount={topDepartments.length} />
-      <div className={s.container} id={divID} />
-      <DepartmentSelector
-        departments={rest}
-        onCustomSelect={handleCustomSelect}
-      />
+      <div className={sReport.container} id={divID}>
+        <DepartmentSelector
+          departments={rest}
+          onCustomSelect={handleCustomSelect}
+        />
+      </div>
       <DepartmentsChartText data={topDepartments} />
     </>
   );
@@ -342,6 +345,7 @@ const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
   departments,
   onCustomSelect,
 }) => {
+  const { t } = useTranslation();
   let [
     customDepartment,
     setCustomDepartment,
@@ -357,19 +361,24 @@ const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
     onCustomSelect(newCustomDept);
   };
 
-  const emptyElement = "None";
+  const emptyElement = t("report.departments.selector.naOption");
 
   return (
-    <div>
-      <span>Choose: </span>
-      <FormControl variant="outlined">
+    <div className={s.customDepartmentSelector}>
+      <div className={s.customDepartmentSelectorText}>
+        <TextBlock
+          text={t("report.departments.selector.selectorText")}
+          style="em"
+        />
+      </div>
+
+      <FormControl variant="outlined" size="small">
         <Select
+          autoWidth={true}
           value={customDepartment == null ? emptyElement : customDepartment.idx}
           onChange={handleChange}
         >
-          <MenuItem value={emptyElement}>
-            <em>{emptyElement}</em>
-          </MenuItem>
+          <MenuItem value={emptyElement}>{emptyElement}</MenuItem>
           {departments
             .sort((a, b) => (a.idx > b.idx ? 1 : -1))
             .map((d) => (

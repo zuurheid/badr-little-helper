@@ -39,7 +39,11 @@
       },
       "text": "Les départements où est naturalisé le plus de personnes :",
       "listElement": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisation",
-      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisations"
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) avec {{count}} naturalisations",
+      "selector": {
+        "selectorText": "Afficher un département :",
+        "naOption": "Non Attribué"
+      }
     }
   },
   "alerts": {
