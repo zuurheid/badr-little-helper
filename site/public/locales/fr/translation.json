@@ -19,6 +19,11 @@
         "yAxisLabel": "Nombre de naturalisations",
         "xAxisLabel": "Séries REZE"
       },
+      "selector": {
+        "selectorText": "Afficher une série\u00A0:",
+        "naOption": "Non Attribué"
+      },
+      "customSeriesText": "",
       "text": {
         "static": "Séries les plus naturalisées dans {{decrees}}\u00A0:",
         "decree": "le décret",

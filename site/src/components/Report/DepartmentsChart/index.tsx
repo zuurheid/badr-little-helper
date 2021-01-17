@@ -160,11 +160,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     d: departmentsDataElement
   ) => {
     let dataSet = topDepartments.slice();
-    dataSet.push({
-      idx: d.idx,
-      count: d.count,
-      name: d.name,
-    });
+    dataSet.push(d);
     const xScale = initXScale(dataSet);
     const yScale = initYScale(dataSet);
     const bars = svg.select("#bars-space").selectAll("rect").data(dataSet);
@@ -241,20 +237,16 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
   };
 
-  const updateChart = (customDept: departmentsDataElement | null) => {
-    const svg = d3.select(`#${divID}`).select("svg");
-    if (customDept === null) {
-      removeFromChart(svg, topDepartments);
-      return;
-    }
-    addToChart(svg, customDept);
-  };
-
   useEffect(() => {
     if (customDepartment === undefined) {
       return;
     }
-    updateChart(customDepartment);
+    const svg = d3.select(`#${divID}`).select("svg");
+    if (customDepartment === null) {
+      removeFromChart(svg, topDepartments);
+      return;
+    }
+    addToChart(svg, customDepartment);
   }, [customDepartment]);
 
   const handleCustomSelect = (d: departmentsDataElement | null) => {
@@ -266,6 +258,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       <DepartmentsChartTitle elementsCount={topDepartments.length} />
       <div className={sReport.container} id={divID}>
         <ChartSelector<departmentsDataElement>
+          label={t("report.departments.selector.selectorText")}
           elements={rest.sort((a, b) => (a.idx > b.idx ? 1 : -1))}
           getValue={(d) => d.idx}
           onCustomSelect={handleCustomSelect}

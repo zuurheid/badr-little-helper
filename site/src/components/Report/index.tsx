@@ -26,7 +26,7 @@ const Report: React.FC<ReportProps> = ({ decreesStats }) => {
       <Summary stats={decreesStats} />
       <SeriesChart
         decreesNumbers={getDecreesNumbers(decreesStats)}
-        data={seriesData}
+        series={seriesData}
       />
       <DepartmentsChart
         {...getDepartmentsData(decreesStats.totalStats.totalDepartmentsStats)}
@@ -41,7 +41,10 @@ function getDecreesNumbers(stats: DecreesStats): string[] {
 
 function getMinistrySeriesData(
   stats: TotalMinistrySeries[]
-): ministrySeriesDataElement[] {
+): {
+  topSeries: ministrySeriesDataElement[];
+  rest: ministrySeriesDataElement[];
+} {
   let statsCopy = stats.slice();
   const seriesStatsDataLen = 11;
   let sortBySeriesFn = (
@@ -69,9 +72,16 @@ function getMinistrySeriesData(
         : sortBySeriesFn(a, b, false)
     );
   }
-  return ministryNumberStatsToMinistrySeriesDataElements(
-    statsCopy.slice(0, seriesStatsDataLen).sort((a, b) => sortBySeriesFn(a, b))
-  );
+  return {
+    topSeries: ministryNumberStatsToMinistrySeriesDataElements(
+      statsCopy
+        .slice(0, seriesStatsDataLen)
+        .sort((a, b) => sortBySeriesFn(a, b))
+    ),
+    rest: ministryNumberStatsToMinistrySeriesDataElements(
+      statsCopy.slice(seriesStatsDataLen).sort((a, b) => sortBySeriesFn(a, b))
+    ),
+  };
 }
 
 function ministryNumberStatsToMinistrySeriesDataElements(

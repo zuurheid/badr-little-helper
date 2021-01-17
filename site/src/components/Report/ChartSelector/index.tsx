@@ -9,9 +9,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 type valueType = string | number | readonly string[];
 
 interface ChartSelectorProps<T> {
+  label: string;
   elements: Array<T>;
   getValue: (el: T) => valueType;
-  onCustomSelect: (d: T | null) => void;
+  onCustomSelect: (el: T | null) => void;
   emptyElement: {
     value: valueType;
     text: string;
@@ -41,10 +42,7 @@ function ChartSelector<T>(props: ChartSelectorProps<T>) {
   return (
     <div className={s.customDepartmentSelector}>
       <div className={s.customDepartmentSelectorText}>
-        <TextBlock
-          text={t("report.departments.selector.selectorText")}
-          style="em"
-        />
+        <TextBlock text={props.label} style="em" />
       </div>
       <FormControl
         variant="outlined"

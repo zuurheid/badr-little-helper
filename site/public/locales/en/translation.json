@@ -19,6 +19,10 @@
         "yAxisLabel": "Number of naturalisations",
         "xAxisLabel": "REZE Series"
       },
+      "selector": {
+        "selectorText": "Show series:",
+        "naOption": "NA"
+      },
       "text": {
         "static": "Series with the most of naturalisations in {{decrees}}:",
         "decree": "decree",
