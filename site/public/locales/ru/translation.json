@@ -43,14 +43,18 @@
         "yAxisLabel": "Департаменты",
         "xAxisLabel": "Количество натурализаций"
       },
+      "selector": {
+        "selectorText": "Показать департамент:",
+        "naOption": "-- Не выбран --"
+      },
       "text": "Департаменты с наибольшим количеством натурализаций :",
       "listElement_0": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализацией",
       "listElement_1": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализациями",
       "listElement_2": "{{departmentNumber}} ({{departmentName}}) с {{count}}\u00A0натурализациями",
-      "selector": {
-        "selectorText": "Показать департамент:",
-        "naOption": "-- Не выбран --"
-      }
+      "naturalisedCount_0": "{{count}} человек натурализован",
+      "naturalisedCount_1": "{{count}} человека натурализовано",
+      "naturalisedCount_2": "{{count}} человек натурализовано",
+      "customDepartmentText": "{{naturalisedCount}} в департаменте {{departmentNumber}} ({{departmentName}})"
     }
   },
   "alerts": {

@@ -37,13 +37,16 @@
         "yAxisLabel": "Departments",
         "xAxisLabel": "Number of naturalisations"
       },
-      "text": "Departments with the most of naturalisations:",
-      "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisation",
-      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisations",
       "selector": {
         "selectorText": "Show a department:",
         "naOption": "NA"
-      }
+      },
+      "text": "Departments with the most of naturalisations:",
+      "listElement": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisation",
+      "listElement_plural": "{{departmentNumber}} ({{departmentName}}) with {{count}}\u00A0naturalisations",
+      "naturalisedCount": "{{count}} person naturalised",
+      "naturalisedCount_plural": "{{count}} people naturalised",
+      "customDepartmentText": "{{naturalisedCount}} in the department {{departmentNumber}} ({{departmentName}})"
     }
   },
   "alerts": {

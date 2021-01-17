@@ -33,6 +33,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
     const svg = d3
       .select(`#${divID}`)
       .append("svg")
+      .attr("class", sReport.chartSVG)
       .attr("viewBox", `0 0 ${width} ${height}`);
     let maxCount = data.reduce((maxCount, c) => {
       if (c.count > maxCount) {

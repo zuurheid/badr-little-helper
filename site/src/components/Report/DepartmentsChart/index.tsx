@@ -273,7 +273,10 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
           onCustomSelect={handleCustomSelect}
         />
       </div>
-      <DepartmentsChartText data={topDepartments} />
+      <DepartmentsChartText
+        data={topDepartments}
+        customDepartment={customDepartment}
+      />
     </>
   );
 };
@@ -294,13 +297,25 @@ const DepartmentsChartTitle: React.FC<departmentsChartTitleProps> = ({
 
 interface departmentsChartTextProps {
   data: departmentsDataElement[];
+  customDepartment: departmentsDataElement | null | undefined;
 }
 
 // TODO: write logic for the dataset with a single department inside
 const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
   data,
+  customDepartment,
 }) => {
   const { t } = useTranslation();
+
+  const getCustomDepartmentText = (d: departmentsDataElement) => {
+    return t("report.departments.customDepartmentText", {
+      naturalisedCount: t("report.departments.naturalisedCount", {
+        count: d.count,
+      }),
+      departmentNumber: d.idx,
+      departmentName: d.name,
+    });
+  };
 
   const getText = () => {
     let dataCopy = data.slice();
@@ -321,19 +336,23 @@ const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
     return {
       texts,
       title: t("report.departments.text"),
+      customDepartmentText:
+        customDepartment == null
+          ? null
+          : getCustomDepartmentText(customDepartment),
     };
   };
 
-  let { title, texts } = getText();
-
-  return (
-    <Article
-      body={[
-        <TextBlock text={title} />,
-        <ListBlock elements={texts} type="unordered" />,
-      ]}
-    />
+  let { title, texts, customDepartmentText } = getText();
+  const articleBody =
+    customDepartmentText != null
+      ? [<TextBlock text={customDepartmentText} />]
+      : [];
+  articleBody.push(
+    <TextBlock text={title} />,
+    <ListBlock elements={texts} type="unordered" />
   );
+  return <Article body={articleBody} />;
 };
 
 interface DepartmentSelectorProps {
