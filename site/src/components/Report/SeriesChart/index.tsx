@@ -23,13 +23,17 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
   const { t } = useTranslation();
   const divID = "series-chart";
 
-  useEffect(() => {
+  const width = 1000;
+  const height = 700;
+  const margin = { top: 20, right: 50, bottom: 90, left: 80 };
+
+  const barLabelPadding = 5;
+
+  const createChart = () => {
     if (data.length === 0) {
       throw new Error("passed data set is empty");
     }
-    const width = 1000;
-    const height = 700;
-    const margin = { top: 20, right: 50, bottom: 90, left: 80 };
+
     const svg = d3
       .select(`#${divID}`)
       .append("svg")
@@ -76,8 +80,6 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .attr("height", (d) => y(0) - y(d.count))
       .attr("width", x.bandwidth());
 
-    const colLabelPadding = 5;
-
     svg
       .append("g")
       .selectAll("text")
@@ -87,7 +89,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => x(d.series) as any)
-      .attr("y", (d) => y(d.count) - colLabelPadding);
+      .attr("y", (d) => y(d.count) - barLabelPadding);
 
     svg
       .append("text")
@@ -118,6 +120,10 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .style("stroke", "black")
       .style("fill", "none")
       .style("stroke-width", 1);
+  };
+
+  useEffect(() => {
+    createChart();
   }, []);
 
   useEffect(() => {

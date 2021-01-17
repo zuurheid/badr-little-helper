@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "../../Select";
 import { HeaderBlock, ListBlock, TextBlock } from "../TextBlocks";
 import Article from "../Article";
-import s from "./DepartmentsChart.module.scss";
 import sReport from "../Report.module.scss";
 import { useTranslation } from "react-i18next";
+import ChartSelector from "../ChartSelector";
 
 export interface departmentsDataElement {
   idx: string;
@@ -268,9 +265,18 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     <>
       <DepartmentsChartTitle elementsCount={topDepartments.length} />
       <div className={sReport.container} id={divID}>
-        <DepartmentSelector
-          departments={rest}
+        <ChartSelector<departmentsDataElement>
+          elements={rest.sort((a, b) => (a.idx > b.idx ? 1 : -1))}
+          getValue={(d) => d.idx}
           onCustomSelect={handleCustomSelect}
+          emptyElement={{
+            value: t("report.departments.selector.naOption") as string,
+            text: t("report.departments.selector.naOption") as string,
+          }}
+          elementToItem={(d) => ({
+            key: d.idx,
+            text: `${d.idx} (${d.name})`,
+          })}
         />
       </div>
       <DepartmentsChartText
@@ -353,62 +359,4 @@ const DepartmentsChartText: React.FC<departmentsChartTextProps> = ({
     <ListBlock elements={texts} type="unordered" />
   );
   return <Article body={articleBody} />;
-};
-
-interface DepartmentSelectorProps {
-  departments: departmentsDataElement[];
-  onCustomSelect: (d: departmentsDataElement | null) => void;
-}
-
-const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
-  departments,
-  onCustomSelect,
-}) => {
-  const { t } = useTranslation();
-  let [
-    customDepartment,
-    setCustomDepartment,
-  ] = useState<departmentsDataElement | null>(null);
-
-  const handleChange = (e: any) => {
-    const customDeptFiltered = departments.filter(
-      (d) => d.idx === e.target.value
-    );
-    const newCustomDept =
-      customDeptFiltered.length === 1 ? customDeptFiltered[0] : null;
-    setCustomDepartment(newCustomDept);
-    onCustomSelect(newCustomDept);
-  };
-
-  const emptyElement = t("report.departments.selector.naOption");
-
-  return (
-    <div className={s.customDepartmentSelector}>
-      <div className={s.customDepartmentSelectorText}>
-        <TextBlock
-          text={t("report.departments.selector.selectorText")}
-          style="em"
-        />
-      </div>
-      <FormControl
-        variant="outlined"
-        size="small"
-        classes={{ root: s.formControl }}
-      >
-        <Select
-          value={customDepartment == null ? emptyElement : customDepartment.idx}
-          onChange={handleChange}
-        >
-          <MenuItem value={emptyElement}>{emptyElement}</MenuItem>
-          {departments
-            .sort((a, b) => (a.idx > b.idx ? 1 : -1))
-            .map((d) => (
-              <MenuItem key={d.idx} value={d.idx}>
-                {d.idx} ({d.name})
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
-    </div>
-  );
 };
