@@ -294,10 +294,20 @@ function groupByDept(entries: Entry[]): GroupStats<Department>[] {
     entries,
     (e) => e.parsed.department,
     (deptNumber) => ({
-      number: deptNumber,
+      number: deptNumber.toUpperCase(),
       name: getDepartmentName(deptNumber),
     })
-  ).sort((a, b) => b.entries.length - a.entries.length);
+  )
+    .sort((a, b) => b.entries.length - a.entries.length)
+    .filter((d) => {
+      const pred = d.group.name !== "NA";
+      if (!pred) {
+        console.log(
+          `[WARN]: found department ${d.group.number} with an NA name`
+        );
+      }
+      return pred;
+    });
 }
 
 function groupStatsBy<T>(

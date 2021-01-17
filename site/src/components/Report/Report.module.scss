@@ -3,23 +3,28 @@
   width: 100%;
 }
 
+.chartSVG {
+  .barValue {
+    font: 1.2em sans-serif;
+  }
+  .axisLabel {
+    font: 1.2em sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .axis {
+    font: 0.8em sans-serif;
+  }
+  background-color: white;
+  display: block;
+  margin: auto;
+  max-width: 1000px;
+  max-height: 700px;
+}
+
 .container {
   margin-bottom: 5%;
-  svg {
-    .barValue {
-      font: 1.2em sans-serif;
-    }
-    .axisLabel {
-      font: 1.2em sans-serif;
-      letter-spacing: 0.05em;
-    }
-    .axis {
-      font: 0.8em sans-serif;
-    }
-    background-color: white;
-    display: block;
-    margin: auto;
-    max-width: 1000px;
-    max-height: 700px;
-  }
+}
+
+:export {
+  customBarColor: #f50057;
 }

@@ -393,6 +393,10 @@ let departmentsData = {
       name: "Val-d'Oise",
       formatted_name: "val-d-oise",
     },
+    "99": {
+      name: "Pays étranger",
+      formatted_name: "pays-étranger",
+    },
     "971": {
       name: "Guadeloupe",
       formatted_name: "guadeloupe",
@@ -409,9 +413,41 @@ let departmentsData = {
       name: "La Réunion",
       formatted_name: "la-reunion",
     },
+    "975": {
+      name: "Saint-Pierre-et-Miquelon",
+      formatted_name: "saint-pierre-et-miquelon",
+    },
     "976": {
       name: "Mayotte",
       formatted_name: "mayotte",
+    },
+    "977": {
+      name: "Saint-Barthélemy",
+      formatted_name: "saint-barthelemy",
+    },
+    "978": {
+      name: "Saint-Martin",
+      formatted_name: "saint-martin",
+    },
+    "984": {
+      name: "Terres australes et antarctiques françaises",
+      formatted_name: "terres-australes-et-antarctiques-francaises",
+    },
+    "986": {
+      name: "Wallis-et-Futuna",
+      formatted_name: "wallis-et-futuna",
+    },
+    "987": {
+      name: "Polynésie française",
+      formatted_name: "polynesie-francaise",
+    },
+    "988": {
+      name: "Nouvelle-Calédonie",
+      formatted_name: "nouvelle-caledonie",
+    },
+    "989": {
+      name: "Île de Clipperton",
+      formatted_name: "ile-de-clipperton",
     },
   },
 };
