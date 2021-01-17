@@ -3,13 +3,22 @@ import s from "./TextBlocks.module.scss";
 
 interface TextBlockProps {
   text: string;
+  style?: "default" | "em";
 }
 
-export const TextBlock: React.FC<TextBlockProps> = ({ text }) => {
+export const TextBlock: React.FC<TextBlockProps> = ({ text, style }) => {
   return (
     <div className={`${s.block} ${s.paragraph}`}>
       <p>
-        <span>{text}</span>
+        {style === "em" ? (
+          <b>
+            <i>
+              <span>{text}</span>
+            </i>
+          </b>
+        ) : (
+          <span>{text}</span>
+        )}
       </p>
     </div>
   );

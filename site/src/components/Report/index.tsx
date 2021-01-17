@@ -7,7 +7,11 @@ import {
 import SeriesChart, { ministrySeriesDataElement } from "./SeriesChart";
 import s from "./Report.module.scss";
 import Summary from "./Summary";
-import { DepartmentsChart, departmentsDataElement } from "./DepartmentsChart";
+import {
+  DepartmentsChart,
+  departmentsDataElement,
+  departmentsChartProps,
+} from "./DepartmentsChart";
 
 interface ReportProps {
   decreesStats: DecreesStats;
@@ -22,10 +26,10 @@ const Report: React.FC<ReportProps> = ({ decreesStats }) => {
       <Summary stats={decreesStats} />
       <SeriesChart
         decreesNumbers={getDecreesNumbers(decreesStats)}
-        data={seriesData}
+        series={seriesData}
       />
       <DepartmentsChart
-        data={getDepartmentsData(decreesStats.totalStats.totalDepartmentsStats)}
+        {...getDepartmentsData(decreesStats.totalStats.totalDepartmentsStats)}
       />
     </div>
   );
@@ -37,7 +41,10 @@ function getDecreesNumbers(stats: DecreesStats): string[] {
 
 function getMinistrySeriesData(
   stats: TotalMinistrySeries[]
-): ministrySeriesDataElement[] {
+): {
+  topSeries: ministrySeriesDataElement[];
+  rest: ministrySeriesDataElement[];
+} {
   let statsCopy = stats.slice();
   const seriesStatsDataLen = 11;
   let sortBySeriesFn = (
@@ -65,9 +72,16 @@ function getMinistrySeriesData(
         : sortBySeriesFn(a, b, false)
     );
   }
-  return ministryNumberStatsToMinistrySeriesDataElements(
-    statsCopy.slice(0, seriesStatsDataLen).sort((a, b) => sortBySeriesFn(a, b))
-  );
+  return {
+    topSeries: ministryNumberStatsToMinistrySeriesDataElements(
+      statsCopy
+        .slice(0, seriesStatsDataLen)
+        .sort((a, b) => sortBySeriesFn(a, b))
+    ),
+    rest: ministryNumberStatsToMinistrySeriesDataElements(
+      statsCopy.slice(seriesStatsDataLen).sort((a, b) => sortBySeriesFn(a, b))
+    ),
+  };
 }
 
 function ministryNumberStatsToMinistrySeriesDataElements(
@@ -81,9 +95,7 @@ function ministryNumberStatsToMinistrySeriesDataElements(
   });
 }
 
-function getDepartmentsData(
-  stats: TotalDepartments[]
-): departmentsDataElement[] {
+function getDepartmentsData(stats: TotalDepartments[]): departmentsChartProps {
   let statsCopy = stats.slice();
   const departmentsDataLength = 10;
   statsCopy.sort((a, b) =>
@@ -95,9 +107,14 @@ function getDepartmentsData(
       ? 1
       : -1
   );
-  return departmentsStatsToDepartmentsDataElements(
-    statsCopy.slice(0, departmentsDataLength)
-  );
+  return {
+    topDepartments: departmentsStatsToDepartmentsDataElements(
+      statsCopy.slice(0, departmentsDataLength)
+    ),
+    rest: departmentsStatsToDepartmentsDataElements(
+      statsCopy.slice(departmentsDataLength)
+    ),
+  };
 }
 
 function departmentsStatsToDepartmentsDataElements(
