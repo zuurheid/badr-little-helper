@@ -1,0 +1,18 @@
+.barValue {
+  font: 1.2em sans-serif;
+}
+.axisLabel {
+  font: 1.2em sans-serif;
+  letter-spacing: 0.05em;
+}
+.axis {
+  font: 0.8em sans-serif;
+}
+
+.chartSVG {
+  background-color: white;
+  display: block;
+  margin: auto;
+  max-width: 1000px;
+  max-height: 700px;
+}

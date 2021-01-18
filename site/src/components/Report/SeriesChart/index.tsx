@@ -30,7 +30,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
 
   const width = 1000;
   const height = 700;
-  const margin = { top: 20, right: 50, bottom: 90, left: 80 };
+  const margins = { top: 20, right: 50, bottom: 90, left: 80 };
 
   let [
     customSeries,
@@ -43,7 +43,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
     return d3
       .scaleBand()
       .domain(data.map((d) => d.series))
-      .rangeRound([margin.left, width - margin.right])
+      .rangeRound([margins.left, width - margins.right])
       .paddingInner(0.6);
   };
 
@@ -58,7 +58,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
     return d3
       .scaleLinear()
       .domain([0, Math.ceil(maxCount / roundToMultiplier) * roundToMultiplier])
-      .range([height - margin.bottom, margin.top]);
+      .range([height - margins.bottom, margins.top]);
   };
 
   const createChart = () => {
@@ -66,10 +66,16 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       throw new Error("passed data set is empty");
     }
 
-    const svg = d3Utils.createSVG({
-      containerSelector: `#${divID}`,
-      dimensions: { height, width },
-      position: "first",
+    const svg = d3Utils.initializeBarChart({
+      classes: [],
+      container: {
+        selector: `#${divID}`,
+        position: "first",
+      },
+      sizeAttributes: {
+        dimensions: { height, width },
+        margins,
+      },
     });
     const y = initYScale(series.topSeries);
     const x = initXScale(series.topSeries);
@@ -78,7 +84,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .append("g")
       .attr("id", "x-axis")
       .attr("class", `${sReport.axis} ${s.axis_x}`)
-      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .attr("transform", `translate(0,${height - margins.bottom})`)
       .call(d3.axisBottom(x).tickPadding(20))
       .selectAll("text");
 
@@ -86,7 +92,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .append("g")
       .attr("id", "y-axis")
       .attr("class", `${sReport.axis}`)
-      .attr("transform", `translate(${margin.left},0)`)
+      .attr("transform", `translate(${margins.left},0)`)
       .call(d3.axisLeft(y).ticks(null));
 
     svg
@@ -118,7 +124,7 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .attr("class", sReport.axisLabel)
       .attr("id", "y-axis-label")
       .attr("transform", "rotate(-90)")
-      .attr("y", margin.left / 4 + 10)
+      .attr("y", margins.left / 4 + 10)
       .attr("x", 0 - height / 2)
       .style("text-anchor", "middle")
       .text(t("report.series.graph.yAxisLabel"));

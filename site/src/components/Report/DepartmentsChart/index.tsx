@@ -25,7 +25,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
   const { t } = useTranslation();
   const divID = "departments-chart";
 
-  const margin = { top: 20, right: 20, bottom: 60, left: 80 };
+  const margins = { top: 20, right: 20, bottom: 60, left: 80 };
   const width = 1000;
   const height = 700;
 
@@ -40,7 +40,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     return d3
       .scaleLinear()
       .domain([0, Math.ceil(maxCount / roundToMultiplier) * roundToMultiplier])
-      .range([margin.left, width - margin.right]);
+      .range([margins.left, width - margins.right]);
   };
   let [xScale, setXScale] = useState(() => {
     return initXScale(topDepartments);
@@ -54,7 +54,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     return d3
       .scaleBand()
       .domain(dataSet.map((d) => d.idx))
-      .rangeRound([margin.top, height - margin.bottom])
+      .rangeRound([margins.top, height - margins.bottom])
       .paddingInner(0.6);
   };
   let [yScale, setYScale] = useState(() => {
@@ -68,13 +68,16 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       throw new Error("passed data set is empty");
     }
 
-    const svg = d3Utils.createSVG({
-      containerSelector: `#${divID}`,
-      dimensions: {
-        height,
-        width,
+    const svg = d3Utils.initializeBarChart({
+      classes: [],
+      container: {
+        selector: `#${divID}`,
+        position: "first",
       },
-      position: "first",
+      sizeAttributes: {
+        dimensions: { height, width },
+        margins,
+      },
     });
 
     svg
@@ -84,23 +87,23 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .data(topDepartments)
       .join("rect")
       .attr("fill", "#3f51b5")
-      .attr("x", margin.left)
+      .attr("x", margins.left)
       .attr("y", (d) => yScale(d.idx) as any)
       .attr("height", yScale.bandwidth())
-      .attr("width", (d) => xScale(d.count) - margin.left);
+      .attr("width", (d) => xScale(d.count) - margins.left);
 
     svg
       .append("g")
       .attr("id", "x-axis")
       .attr("class", sReport.axis)
-      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .attr("transform", `translate(0,${height - margins.bottom})`)
       .call(d3.axisBottom(xScale).ticks(null));
 
     svg
       .append("g")
       .attr("id", "y-axis")
       .attr("class", sReport.axis)
-      .attr("transform", `translate(${margin.left}, 0)`)
+      .attr("transform", `translate(${margins.left}, 0)`)
       .call(d3.axisLeft(yScale).ticks(null));
 
     svg
@@ -113,14 +116,14 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
-      .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
+      .attr("y", (d) => (yScale(d.idx) as any) + margins.top);
 
     svg
       .append("text")
       .attr("class", sReport.axisLabel)
       .attr("id", "y-axis-label")
       .attr("transform", "rotate(-90)")
-      .attr("y", margin.left / 4 + 10)
+      .attr("y", margins.left / 4 + 10)
       .attr("x", 0 - height / 2)
       .style("text-anchor", "middle")
       .text("Départements");
@@ -175,10 +178,10 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("fill", sReport.customBarColor)
       .merge(bars as any)
       .transition()
-      .attr("x", margin.left)
+      .attr("x", margins.left)
       .attr("y", (d) => yScale(d.idx) as any)
       .attr("height", yScale.bandwidth())
-      .attr("width", (d) => xScale(d.count) - margin.left);
+      .attr("width", (d) => xScale(d.count) - margins.left);
 
     const yAxis = d3.axisLeft(yScale).ticks(null);
     svg
@@ -195,7 +198,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
-      .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
+      .attr("y", (d) => (yScale(d.idx) as any) + margins.top);
   };
 
   const removeFromChart = (
@@ -214,10 +217,10 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     barsToRemove
       .merge(bars as any)
       .transition()
-      .attr("x", margin.left)
+      .attr("x", margins.left)
       .attr("y", (d) => yScale(d.idx) as any)
       .attr("height", yScale.bandwidth())
-      .attr("width", (d) => xScale(d.count) - margin.left);
+      .attr("width", (d) => xScale(d.count) - margins.left);
 
     const yAxis = d3.axisLeft(yScale).ticks(null);
     svg
@@ -238,7 +241,7 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("class", sReport.barValue)
       .text((d) => d.count)
       .attr("x", (d) => xScale(d.count) + barLabelPadding)
-      .attr("y", (d) => (yScale(d.idx) as any) + margin.top);
+      .attr("y", (d) => (yScale(d.idx) as any) + margins.top);
   };
 
   useEffect(() => {
