@@ -5,6 +5,7 @@ import Article from "../Article";
 import sReport from "../Report.module.scss";
 import { useTranslation } from "react-i18next";
 import ChartSelector from "../ChartSelector";
+import * as d3Utils from "../d3";
 
 export interface departmentsDataElement {
   idx: string;
@@ -67,11 +68,14 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       throw new Error("passed data set is empty");
     }
 
-    const svg = d3
-      .select(`#${divID}`)
-      .insert("svg", ":first-child")
-      .attr("class", sReport.chartSVG)
-      .attr("viewBox", `0 0 ${width} ${height}`);
+    const svg = d3Utils.createSVG({
+      containerSelector: `#${divID}`,
+      dimensions: {
+        height,
+        width,
+      },
+      position: "first",
+    });
 
     svg
       .append("g")

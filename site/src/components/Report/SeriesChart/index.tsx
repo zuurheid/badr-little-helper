@@ -6,7 +6,7 @@ import s from "./SeriesChart.module.scss";
 import sReport from "../Report.module.scss";
 import { useTranslation } from "react-i18next";
 import ChartSelector from "../ChartSelector";
-import { departmentsDataElement } from "../DepartmentsChart";
+import * as d3Utils from "../d3";
 
 export interface ministrySeriesDataElement {
   series: string;
@@ -66,11 +66,11 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       throw new Error("passed data set is empty");
     }
 
-    const svg = d3
-      .select(`#${divID}`)
-      .insert("svg", ":first-child")
-      .attr("class", sReport.chartSVG)
-      .attr("viewBox", `0 0 ${width} ${height}`);
+    const svg = d3Utils.createSVG({
+      containerSelector: `#${divID}`,
+      dimensions: { height, width },
+      position: "first",
+    });
     const y = initYScale(series.topSeries);
     const x = initXScale(series.topSeries);
 
@@ -96,7 +96,6 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       .data(series.topSeries)
       .join("rect")
       .attr("class", sReport.bar)
-      //.attr("fill", "#3f51b5")
       .attr("x", (d) => x(d.series) as any)
       .attr("y", (d) => y(d.count))
       .attr("height", (d) => y(0) - y(d.count))
