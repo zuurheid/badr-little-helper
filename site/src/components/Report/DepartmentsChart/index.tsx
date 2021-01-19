@@ -78,6 +78,26 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
         dimensions: { height, width },
         margins,
       },
+      axis: {
+        x: {
+          a: d3.axisBottom(xScale) /*.ticks(null)*/,
+          attrs: [
+            {
+              name: "id",
+              value: "x-axis",
+            },
+          ],
+        },
+        y: {
+          a: d3.axisLeft(yScale),
+          attrs: [
+            {
+              name: "id",
+              value: "y-axis",
+            },
+          ],
+        },
+      },
     });
 
     svg
@@ -91,20 +111,6 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       .attr("y", (d) => yScale(d.idx) as any)
       .attr("height", yScale.bandwidth())
       .attr("width", (d) => xScale(d.count) - margins.left);
-
-    svg
-      .append("g")
-      .attr("id", "x-axis")
-      .attr("class", sReport.axis)
-      .attr("transform", `translate(0,${height - margins.bottom})`)
-      .call(d3.axisBottom(xScale).ticks(null));
-
-    svg
-      .append("g")
-      .attr("id", "y-axis")
-      .attr("class", sReport.axis)
-      .attr("transform", `translate(${margins.left}, 0)`)
-      .call(d3.axisLeft(yScale).ticks(null));
 
     svg
       .append("g")

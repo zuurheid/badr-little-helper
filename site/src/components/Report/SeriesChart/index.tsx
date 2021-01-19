@@ -66,6 +66,8 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       throw new Error("passed data set is empty");
     }
 
+    const y = initYScale(series.topSeries);
+    const x = initXScale(series.topSeries);
     const svg = d3Utils.initializeBarChart({
       classes: [],
       container: {
@@ -76,24 +78,28 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
         dimensions: { height, width },
         margins,
       },
+      axis: {
+        x: {
+          a: d3.axisBottom(x).tickPadding(20),
+          attrs: [
+            {
+              name: "id",
+              value: "x-axis",
+            },
+          ],
+          classes: [s.axis_x],
+        },
+        y: {
+          a: d3.axisLeft(y),
+          attrs: [
+            {
+              name: "id",
+              value: "y-axis",
+            },
+          ],
+        },
+      },
     });
-    const y = initYScale(series.topSeries);
-    const x = initXScale(series.topSeries);
-
-    svg
-      .append("g")
-      .attr("id", "x-axis")
-      .attr("class", `${sReport.axis} ${s.axis_x}`)
-      .attr("transform", `translate(0,${height - margins.bottom})`)
-      .call(d3.axisBottom(x).tickPadding(20))
-      .selectAll("text");
-
-    svg
-      .append("g")
-      .attr("id", "y-axis")
-      .attr("class", `${sReport.axis}`)
-      .attr("transform", `translate(${margins.left},0)`)
-      .call(d3.axisLeft(y).ticks(null));
 
     svg
       .append("g")
