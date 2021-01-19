@@ -69,7 +69,6 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
     const y = initYScale(series.topSeries);
     const x = initXScale(series.topSeries);
     const svg = d3Utils.initializeBarChart({
-      classes: [],
       container: {
         selector: `#${divID}`,
         position: "first",
@@ -81,37 +80,47 @@ export const SeriesChart: React.FC<seriesChartProps> = ({
       axis: {
         x: {
           a: d3.axisBottom(x).tickPadding(20),
-          attrs: [
-            {
-              name: "id",
-              value: "x-axis",
-            },
-          ],
-          classes: [s.axis_x],
+          elAttrs: {
+            attrs: [
+              {
+                name: "id",
+                value: "x-axis",
+              },
+            ],
+            classes: [s.axis_x],
+          },
         },
         y: {
           a: d3.axisLeft(y),
+          elAttrs: {
+            attrs: [
+              {
+                name: "id",
+                value: "y-axis",
+              },
+            ],
+          },
+        },
+      },
+      barParams: {
+        data: series.topSeries,
+        containerAttrs: {
           attrs: [
             {
               name: "id",
-              value: "y-axis",
+              value: "bars-space",
             },
           ],
         },
+        drawBarFn: (el) => {
+          return el
+            .attr("x", (d) => x(d.series) as any)
+            .attr("y", (d) => y(d.count))
+            .attr("height", (d) => y(0) - y(d.count))
+            .attr("width", x.bandwidth());
+        },
       },
     });
-
-    svg
-      .append("g")
-      .attr("id", "bars-space")
-      .selectAll("rect")
-      .data(series.topSeries)
-      .join("rect")
-      .attr("class", sReport.bar)
-      .attr("x", (d) => x(d.series) as any)
-      .attr("y", (d) => y(d.count))
-      .attr("height", (d) => y(0) - y(d.count))
-      .attr("width", x.bandwidth());
 
     svg
       .append("g")

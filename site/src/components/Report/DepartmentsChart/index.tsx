@@ -69,7 +69,6 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
     }
 
     const svg = d3Utils.initializeBarChart({
-      classes: [],
       container: {
         selector: `#${divID}`,
         position: "first",
@@ -81,36 +80,46 @@ export const DepartmentsChart: React.FC<departmentsChartProps> = ({
       axis: {
         x: {
           a: d3.axisBottom(xScale) /*.ticks(null)*/,
-          attrs: [
-            {
-              name: "id",
-              value: "x-axis",
-            },
-          ],
+          elAttrs: {
+            attrs: [
+              {
+                name: "id",
+                value: "x-axis",
+              },
+            ],
+          },
         },
         y: {
           a: d3.axisLeft(yScale),
+          elAttrs: {
+            attrs: [
+              {
+                name: "id",
+                value: "y-axis",
+              },
+            ],
+          },
+        },
+      },
+      barParams: {
+        data: topDepartments,
+        containerAttrs: {
           attrs: [
             {
               name: "id",
-              value: "y-axis",
+              value: "bars-space",
             },
           ],
         },
+        drawBarFn: (el) => {
+          return el
+            .attr("x", margins.left)
+            .attr("y", (d) => yScale(d.idx) as any)
+            .attr("height", yScale.bandwidth())
+            .attr("width", (d) => xScale(d.count) - margins.left);
+        },
       },
     });
-
-    svg
-      .append("g")
-      .attr("id", "bars-space")
-      .selectAll("rect")
-      .data(topDepartments)
-      .join("rect")
-      .attr("fill", "#3f51b5")
-      .attr("x", margins.left)
-      .attr("y", (d) => yScale(d.idx) as any)
-      .attr("height", yScale.bandwidth())
-      .attr("width", (d) => xScale(d.count) - margins.left);
 
     svg
       .append("g")

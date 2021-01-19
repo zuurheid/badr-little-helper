@@ -26,8 +26,13 @@ export interface ChartSizeAttributes {
   margins: Margins;
 }
 
+export interface ElementAttrs {
+  classes?: string[];
+  attrs?: { name: string; value: string }[];
+}
+
 export interface ChartParams {
   container: ChartContainer;
   sizeAttributes: ChartSizeAttributes;
-  classes?: string[];
+  //classes?: string[];
 }
